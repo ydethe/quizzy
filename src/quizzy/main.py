@@ -1,7 +1,13 @@
 import streamlit as st
 
+from quizzy.Quiz import Quiz
+
 
 st.title("Uber pickups in NYC")
+
+# Read query params (?name=Alice&age=30)
+params = st.query_params
+quiz = Quiz.from_yaml(params.get("q"))
 
 # Use the get method since the keys won't be in session_state
 # on the first script run
@@ -20,7 +26,13 @@ if st.session_state.get("answer_03"):
 
 c = st.container()
 
-c.text_input("Name", key="user_answer")
+question = quiz.questions[0]
 
-c.button("Answer 01", key="answer_00")
-c.button("Answer 02", key="answer_01")
+c.title(question.text)
+
+# c.text_input("Name", key="user_answer")
+
+for k, a in enumerate(question.answers):
+    c.button(a, key=f"answer_{k:02}")
+
+c.button("Envoyer")
