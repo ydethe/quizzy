@@ -1,11 +1,13 @@
+from pathlib import Path
 import unittest
 
-from quizzy.read_quiz import read_quiz
+from quizzy.Quiz import Quiz
 
 
 class TestQuizzy(unittest.TestCase):
     def test_read_quiz(self):
-        read_quiz()
+        quiz = Quiz.from_yaml(Path("tests/prod.yml"))
+        print(quiz)
 
 
 if __name__ == "__main__":
