@@ -32,8 +32,12 @@ active_color = "blue"
 inactive_color = "grey"
 
 
-def on_click(e: events.ClickEventArguments):
-    print(user_results.answers)
+def on_click(quizz, page):
+    def callback(e: events.ClickEventArguments):
+        print(user_results.answers)
+        ui.navigate.to(f"{quizz}?page={page}", new_tab=False)
+
+    return callback
 
 
 @ui.page("/{quizz}")
@@ -57,7 +61,10 @@ def hello_page(request: Request, quizz: str, page: int | None = None):
         for idx, a in enumerate(question.answers):
             ui.chip(a, on_click=user_results.on_chip_click(idx)).props(f"color={inactive_color}")
 
-        ui.button("Suivant", on_click=on_click)
+        with ui.button_group():
+            if page > 0:
+                ui.button("Précédent", on_click=on_click(quizz, page - 1))
+            ui.button("Suivant", on_click=on_click(quizz, page + 1))
 
 
 ui.run(port=3000)
