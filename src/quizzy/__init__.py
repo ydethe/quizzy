@@ -24,8 +24,6 @@ import sys
 import os
 import logging
 
-from geopy.geocoders import Nominatim
-
 
 # création de l'objet logger qui va nous servir à écrire dans les logs
 logger = logging.getLogger("quizzy_logger")
@@ -39,5 +37,3 @@ formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
 
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
-
-geolocator = Nominatim(user_agent="my_geocoder")

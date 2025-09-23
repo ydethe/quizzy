@@ -8,6 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest]()</small>
+<small>[Compare with latest](https://github.com/ydethe/quizzy/compare/2fcfcf8a69285cdbb4ee301cfc0f7745e24cf528...HEAD)</small>
 
 <!-- insertion marker -->
