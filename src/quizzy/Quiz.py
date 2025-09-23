@@ -12,9 +12,17 @@ class Question(BaseModel):
     answers: List[str]
     good_answers: List[int]
 
+    @property
+    def number_of_answers(self) -> int:
+        return len(self.answers)
+
 
 class Quiz(BaseModel):
     questions: List[Question]
+
+    @property
+    def number_of_questions(self) -> int:
+        return len(self.questions)
 
     @classmethod
     def from_yaml(cls, yml_pth: Path) -> "Quiz":

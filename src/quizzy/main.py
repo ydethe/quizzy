@@ -1,42 +1,63 @@
-import streamlit as st
+from pathlib import Path
+from nicegui import ui, events
+from fastapi import Request
 
 from quizzy.Quiz import Quiz
 
 
-st.title("Uber pickups in NYC")
+class Results:
+    def __init__(self):
+        self.answers = dict()
 
-# Read query params (?name=Alice&age=30)
-params = st.query_params
-quiz = Quiz.from_yaml(params.get("q"))
+    def reset(self, number_of_answers: int):
+        self.answers = {idx: False for idx in range(number_of_answers)}
 
-if "step" not in st.session_state:
-    st.session_state.step = 0
+    def on_chip_click(self, idx: int):
+        def callback(e: events.ClickEventArguments):
+            self.answers[idx] = self.update_color(e)
 
-# Use the get method since the keys won't be in session_state
-# on the first script run
-if st.session_state.get("answer_00"):
-    st.session_state["user_answer"] = "0"
+        return callback
 
-if st.session_state.get("answer_01"):
-    st.session_state["user_answer"] = "1"
+    def update_color(self, e: events.ClickEventArguments) -> bool:
+        color = e.sender._props.get("color", active_color)
+        state = color == inactive_color
+        e.sender.props(f"color={active_color if state else inactive_color}")
 
-if st.session_state.get("answer_02"):
-    st.session_state["user_answer"] = "2"
-
-if st.session_state.get("answer_03"):
-    st.session_state["user_answer"] = "3"
+        return state
 
 
-c = st.container()
+user_results = Results()
 
-question = quiz.questions[st.session_state.step]
+active_color = "blue"
+inactive_color = "grey"
 
-c.title(question.text)
 
-# c.text_input("Name", key="user_answer")
+def on_click(e: events.ClickEventArguments):
+    print(user_results.answers)
 
-for k, a in enumerate(question.answers):
-    c.button(a, key=f"answer_{k:02}")
 
-if c.button("Suivant"):
-    st.session_state.step += 1
+@ui.page("/{quizz}")
+def hello_page(request: Request, quizz: str, page: int | None = None):
+    qpth = Path(f"tests/{quizz}.yml")
+    qo = Quiz.from_yaml(qpth)
+
+    if page is None:
+        page = 0
+
+    if page >= qo.number_of_questions:
+        page = qo.number_of_questions - 1
+
+    question = qo.questions[page]
+
+    user_results.reset(question.number_of_answers)
+
+    with ui.column():
+        ui.markdown(f"# {question.text}")
+
+        for idx, a in enumerate(question.answers):
+            ui.chip(a, on_click=user_results.on_chip_click(idx)).props(f"color={inactive_color}")
+
+        ui.button("Suivant", on_click=on_click)
+
+
+ui.run(port=3000)
