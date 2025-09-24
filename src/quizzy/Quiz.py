@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Set
 import json
 
 import yaml
@@ -11,6 +11,7 @@ class Question(BaseModel):
     text: str
     answers: List[str]
     good_answers: List[int]
+    user_answers: Set[int]=set()
 
     @property
     def number_of_answers(self) -> int:
@@ -25,8 +26,8 @@ class Quiz(BaseModel):
         return len(self.questions)
 
     @classmethod
-    def from_yaml(cls, yml_pth: Path) -> "Quiz":
+    def from_yaml(cls, yml_pth: Path):
         with open(yml_pth, "r") as f:
             dat = yaml.load(f, Loader=BaseLoader)
-        quiz = Quiz.model_validate_json(json.dumps(dat))
+        quiz = cls.model_validate_json(json.dumps(dat))
         return quiz
