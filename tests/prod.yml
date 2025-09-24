@@ -1,0 +1,17 @@
+questions:
+- text: Quelle est la capitale de la France ?
+  answers:
+  - Paris
+  - Vienne
+  - Rome
+  - Madrid
+  good_answers:
+  - 0
+- text: Qui est le premier homme à avoir marché sur la Lune ?
+  answers:
+  - Buzz Aldrin
+  - Niels Armstrong
+  - Mickael Collins
+  - Werner von Braun
+  good_answers:
+  - 1
