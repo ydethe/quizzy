@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Set
+from typing import List, Optional, Set
 import json
 
 import yaml
@@ -19,6 +19,7 @@ class Question(BaseModel):
 
 
 class Quiz(BaseModel):
+    name:Optional[str]=""
     questions: List[Question]
 
     @property
@@ -30,4 +31,5 @@ class Quiz(BaseModel):
         with open(yml_pth, "r") as f:
             dat = yaml.load(f, Loader=BaseLoader)
         quiz = cls.model_validate_json(json.dumps(dat))
+        quiz.name=yml_pth.stem
         return quiz
