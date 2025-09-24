@@ -11,7 +11,7 @@ class Question(BaseModel):
     text: str
     answers: List[str]
     good_answers: List[int]
-    user_answers: Set[int]=set()
+    user_answers: Set[int] = set()
 
     @property
     def number_of_answers(self) -> int:
@@ -19,7 +19,7 @@ class Question(BaseModel):
 
 
 class Quiz(BaseModel):
-    name:Optional[str]=""
+    name: Optional[str] = ""
     questions: List[Question]
 
     @property
@@ -31,5 +31,5 @@ class Quiz(BaseModel):
         with open(yml_pth, "r") as f:
             dat = yaml.load(f, Loader=BaseLoader)
         quiz = cls.model_validate_json(json.dumps(dat))
-        quiz.name=yml_pth.stem
+        quiz.name = yml_pth.stem
         return quiz

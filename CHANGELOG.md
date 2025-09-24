@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added prod.yml ([c5caf90](https://github.com/ydethe/quizzy/commit/c5caf901a670e3e656cbdc07d0a23c28fdb1353a) by Yann de The).
 - Added gradio version ([2768ce3](https://github.com/ydethe/quizzy/commit/2768ce380e8b08ee664f16a1f8d851f36ea6a266) by Yann de The).
 - Added quiz parsing ([76f8164](https://github.com/ydethe/quizzy/commit/76f8164b07cb5b52263a8e8f43be2aa52d3ea242) by Yann de The).
 
