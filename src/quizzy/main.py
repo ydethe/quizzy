@@ -1,6 +1,7 @@
 from pathlib import Path
 from base64 import b64decode, b64encode
 import json
+from typing import List
 
 from nicegui import ui, events
 from fastapi import Request
@@ -26,14 +27,22 @@ class FilledQuiz(Quiz):
 
         return state
 
-    def serialize_answers(self) -> str:
+    def extract_answers(self) -> List[List[int]]:
         uans = [list(a.user_answers) for a in self.questions]
+        return uans
+
+    def serialize_answers(self) -> str:
+        uans = self.extract_answers()
         jans = json.dumps(uans).encode("utf-8")
         return b64encode(jans).decode("utf-8")
 
-    def set_answers_from_serialzed(self, answers: str):
+    def decode_answer(self, answers: str) -> str:
         sans = b64decode(answers)
         ans_obj = json.loads(sans)
+        return ans_obj
+
+    def set_answers_from_serialzed(self, answers: str):
+        ans_obj = self.decode_answer(answers)
         for page, qans in enumerate(ans_obj):
             self.questions[page].user_answers = set()
             for idx in qans:
@@ -54,7 +63,7 @@ def on_click(quizz: FilledQuiz, page: int):
 
 def on_submit(user_results: FilledQuiz):
     def callback(e: events.ClickEventArguments):
-        print(user_results.serialize_answers())
+        print(user_results.extract_answers())
 
     return callback
 
