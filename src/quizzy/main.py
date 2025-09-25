@@ -4,7 +4,6 @@ import json
 from typing import List
 
 from nicegui import ui, events
-from fastapi import Request
 
 from quizzy.Quiz import Quiz
 
@@ -53,54 +52,61 @@ active_color = "blue"
 inactive_color = "grey"
 
 
-def on_click(quizz: FilledQuiz, page: int):
+def on_click(user_results: FilledQuiz, page: int):
     def callback(e: events.ClickEventArguments):
-        sans = quizz.serialize_answers()
-        ui.navigate.to(f"{quizz.name}?page={page}&answers={sans}", new_tab=False)
+        sans = user_results.serialize_answers()
+        ui.navigate.to(f"{user_results.name}?page={page}&answers={sans}", new_tab=False)
 
     return callback
 
 
 def on_submit(user_results: FilledQuiz):
     def callback(e: events.ClickEventArguments):
-        print(user_results.extract_answers())
+        sans = user_results.serialize_answers()
+        ui.navigate.to(f"{user_results.name}?page=results&answers={sans}", new_tab=False)
 
     return callback
 
 
 @ui.page("/{quizz}")
-def hello_page(request: Request, quizz: str, page: int | None = None, answers: str = ""):
+def hello_page(quizz: str, page: str | None = None, answers: str = ""):
     qpth = Path(f"tests/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
 
     if answers != "":
         user_results.set_answers_from_serialzed(answers)
 
-    if page is None:
-        page = 0
+    page_num = 0
+    if page == "results":
+        with ui.column():
+            ui.markdown("# Résultats")
+            ui.markdown(f"{user_results.extract_answers()}")
 
-    if page >= user_results.number_of_questions:
-        page = user_results.number_of_questions - 1
+    else:
+        if page is not None:
+            page_num = int(page)
+            if page_num >= user_results.number_of_questions:
+                page_num = user_results.number_of_questions - 1
 
-    question = user_results.questions[page]
+        question = user_results.questions[page_num]
 
-    with ui.column():
-        ui.markdown(f"# {question.text}")
+        with ui.column():
+            ui.markdown(f"# {question.text}")
 
-        for idx, answer_text in enumerate(question.answers):
-            color = active_color if idx in question.user_answers else inactive_color
-            ui.chip(answer_text, on_click=user_results.on_chip_click(page, idx)).props(
-                f"color={color}"
-            )
+            for idx, answer_text in enumerate(question.answers):
+                color = active_color if idx in question.user_answers else inactive_color
+                ui.chip(answer_text, on_click=user_results.on_chip_click(page_num, idx)).props(
+                    f"color={color}"
+                )
 
-        with ui.button_group():
-            if page > 0:
-                ui.button("Précédent", on_click=on_click(user_results, page - 1))
+            with ui.button_group():
+                if page_num > 0:
+                    ui.button("Précédent", on_click=on_click(user_results, page_num - 1))
 
-            if page < user_results.number_of_questions - 1:
-                ui.button("Suivant", on_click=on_click(user_results, page + 1))
-            else:
-                ui.button("Soumettre", on_click=on_submit(user_results))
+                if page_num < user_results.number_of_questions - 1:
+                    ui.button("Suivant", on_click=on_click(user_results, page_num + 1))
+                else:
+                    ui.button("Soumettre", on_click=on_submit(user_results))
 
 
 ui.run(port=3000)
