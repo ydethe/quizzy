@@ -76,14 +76,30 @@ def hello_page(quizz: str, page: str | None = None, answers: str = ""):
     if answers != "":
         user_results.set_answers_from_serialzed(answers)
 
-    page_num = 0
     if page == "results":
         with ui.column():
             ui.markdown("# Résultats")
-            ui.markdown(f"{user_results.extract_answers()}")
+            # ui.markdown(f"{user_results.extract_answers()}")
+            columns = [
+                {
+                    "name": "question",
+                    "label": "Question",
+                    "field": "question",
+                    "required": True,
+                    "align": "left",
+                },
+                {"name": "correct", "label": "Attendu", "field": "correct"},
+                {"name": "user", "label": "Répondu", "field": "user"},
+            ]
+            rows = []
+            for q, sans in zip(user_results.questions, user_results.extract_answers()):
+                rows.append({"question": q.text, "correct": q.good_answers, "user": sans})
+            ui.table(columns=columns, rows=rows, row_key="question")
 
     else:
-        if page is not None:
+        if page is None:
+            page_num = 0
+        else:
             page_num = int(page)
             if page_num >= user_results.number_of_questions:
                 page_num = user_results.number_of_questions - 1
