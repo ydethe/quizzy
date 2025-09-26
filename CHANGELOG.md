@@ -17,4 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added gradio version ([2768ce3](https://github.com/ydethe/quizzy/commit/2768ce380e8b08ee664f16a1f8d851f36ea6a266) by Yann de The).
 - Added quiz parsing ([76f8164](https://github.com/ydethe/quizzy/commit/76f8164b07cb5b52263a8e8f43be2aa52d3ea242) by Yann de The).
 
+### Fixed
+
+- Fixed relative navigation ([15201e5](https://github.com/ydethe/quizzy/commit/15201e5ffbf44407405dced82e8e8a29abc9c5f0) by Yann de The).
+
 <!-- insertion marker -->

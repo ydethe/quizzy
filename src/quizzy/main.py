@@ -76,16 +76,21 @@ def display_results(quizz: str, answers: str):
 
     with ui.column():
         ui.markdown("# Résultats")
-        # ui.markdown(f"{user_results.extract_answers()}")
-        columns = [
-            {"label": "Question", "field": "question", "align": "left"},
-            {"label": "Attendu", "field": "correct"},
-            {"label": "Répondu", "field": "user"},
-        ]
-        rows = []
+
+        table_md = ""
+        table_md += "|Question|Attendu|Répondu|\n"
+        table_md += "|:-|:-:|:-:|\n"
+        # columns = [
+        #     {"label": "Question", "field": "question", "align": "left"},
+        #     {"label": "Attendu", "field": "correct"},
+        #     {"label": "Répondu", "field": "user"},
+        # ]
+        # rows = []
         for q, sans in zip(user_results.questions, user_results.extract_answers()):
-            rows.append({"question": q.text, "correct": q.good_answers, "user": sans})  # type: ignore
-        ui.table(columns=columns, rows=rows, row_key="question")
+            table_md += f"|{q.text}|{q.good_answers}|{sans}|\n"
+        #     rows.append({"question": q.text, "correct": q.good_answers, "user": sans})  # type: ignore
+        # ui.table(columns=columns, rows=rows, row_key="question")
+        ui.markdown(table_md)
 
 
 @ui.page("/run/{quizz}")
