@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added results table ([71f1275](https://github.com/ydethe/quizzy/commit/71f12751c99e03623be81f1dd6e8ac8623d2a90f) by Yann de The).
 - Added helpers ([79decef](https://github.com/ydethe/quizzy/commit/79decef1e7c9eea935af67cb9ceadf03bb9e4d78) by Yann de The).
 - Added prod.yml ([f61c303](https://github.com/ydethe/quizzy/commit/f61c303e0a5751f62d451ffbd364064af3cf626a) by Yann de The).
 - Added gradio version ([2768ce3](https://github.com/ydethe/quizzy/commit/2768ce380e8b08ee664f16a1f8d851f36ea6a266) by Yann de The).

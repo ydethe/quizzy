@@ -74,23 +74,17 @@ def display_results(quizz: str, answers: str):
     user_results = FilledQuiz.from_yaml(qpth)
     user_results.set_answers_from_serialzed(answers)
 
-    with ui.column():
-        ui.markdown("# Résultats")
+    columns = [
+        {"label": "Question", "field": "question", "align": "left"},
+        {"label": "Attendu", "field": "correct"},
+        {"label": "Répondu", "field": "user"},
+    ]
+    rows = []
+    for q, sans in zip(user_results.questions, user_results.extract_answers()):
+        rows.append({"question": q.text, "correct": q.good_answers, "user": sans})  # type: ignore
 
-        table_md = ""
-        table_md += "|Question|Attendu|Répondu|\n"
-        table_md += "|:-|:-:|:-:|\n"
-        # columns = [
-        #     {"label": "Question", "field": "question", "align": "left"},
-        #     {"label": "Attendu", "field": "correct"},
-        #     {"label": "Répondu", "field": "user"},
-        # ]
-        # rows = []
-        for q, sans in zip(user_results.questions, user_results.extract_answers()):
-            table_md += f"|{q.text}|{q.good_answers}|{sans}|\n"
-        #     rows.append({"question": q.text, "correct": q.good_answers, "user": sans})  # type: ignore
-        # ui.table(columns=columns, rows=rows, row_key="question")
-        ui.markdown(table_md)
+    # ui.markdown("# Résultats")
+    ui.table(columns=columns, rows=rows, row_key="question")
 
 
 @ui.page("/run/{quizz}")
