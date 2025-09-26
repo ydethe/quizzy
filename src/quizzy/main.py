@@ -55,7 +55,7 @@ inactive_color = "grey"
 def on_click(user_results: FilledQuiz, page: int):
     def callback(e: events.ClickEventArguments):
         sans = user_results.serialize_answers()
-        ui.navigate.to(f"run/{user_results.name}?page={page}&answers={sans}", new_tab=False)
+        ui.navigate.to(f"/run/{user_results.name}?page={page}&answers={sans}", new_tab=False)
 
     return callback
 
@@ -63,7 +63,7 @@ def on_click(user_results: FilledQuiz, page: int):
 def on_submit(user_results: FilledQuiz):
     def callback(e: events.ClickEventArguments):
         sans = user_results.serialize_answers()
-        ui.navigate.to(f"results/{user_results.name}?answers={sans}", new_tab=False)
+        ui.navigate.to(f"/results/{user_results.name}?answers={sans}", new_tab=False)
 
     return callback
 
