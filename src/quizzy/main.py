@@ -73,19 +73,24 @@ def display_results(quizz: str, answers: str):
     qpth = Path(f"tests/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
     user_results.set_answers_from_serialzed(answers)
-    print(user_results)
 
     columns = [
         {"label": "Question", "field": "question", "align": "left"},
-        {"label": "Attendu", "field": "correct", "align": "center"},
-        {"label": "Répondu", "field": "user", "align": "center"},
+        {"label": "Verdict", "field": "verdict", "align": "center"},
     ]
     rows = []
+    count_ok = 0
+    count_total = 0
     for q, sans in zip(user_results.questions, user_results.extract_answers()):
-        rows.append({"question": q.text, "correct": str(q.good_answers), "user": str(sans)})  # type: ignore
+        verdict = set(q.good_answers) == set(sans)
+        count_ok += 1 if verdict else 0
+        count_total += 1
+        symb = "✅" if verdict else "❌"
+        rows.append({"question": q.text, "verdict": symb})  # type: ignore
 
-    # ui.markdown("# Résultats")
+    ui.markdown("# Résultats")
     ui.table(columns=columns, rows=rows, row_key="question")
+    ui.markdown(f"## Total : {100*count_ok/count_total:.0f}%")
 
 
 @ui.page("/run/{quizz}")
