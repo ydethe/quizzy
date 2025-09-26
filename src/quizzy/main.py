@@ -55,7 +55,7 @@ inactive_color = "grey"
 def on_click(user_results: FilledQuiz, page: int):
     def callback(e: events.ClickEventArguments):
         sans = user_results.serialize_answers()
-        ui.navigate.to(f"{user_results.name}?page={page}&answers={sans}", new_tab=False)
+        ui.navigate.to(f"run/{user_results.name}?page={page}&answers={sans}", new_tab=False)
 
     return callback
 
@@ -92,7 +92,6 @@ def display_results(quizz: str, answers: str):
 def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
     qpth = Path(f"tests/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
-    print(user_results)
 
     if answers != "":
         user_results.set_answers_from_serialzed(answers)
