@@ -63,66 +63,64 @@ def on_click(user_results: FilledQuiz, page: int):
 def on_submit(user_results: FilledQuiz):
     def callback(e: events.ClickEventArguments):
         sans = user_results.serialize_answers()
-        ui.navigate.to(f"{user_results.name}?page=results&answers={sans}", new_tab=False)
+        ui.navigate.to(f"results/{user_results.name}?answers={sans}", new_tab=False)
 
     return callback
 
 
-@ui.page("/{quizz}")
-def hello_page(quizz: str, page: str | None = None, answers: str = ""):
+@ui.page("/results/{quizz}")
+def display_results(quizz: str, answers: str):
     qpth = Path(f"tests/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
+    user_results.set_answers_from_serialzed(answers)
+
+    with ui.column():
+        ui.markdown("# Résultats")
+        # ui.markdown(f"{user_results.extract_answers()}")
+        columns = [
+            {"label": "Question", "field": "question", "align": "left"},
+            {"label": "Attendu", "field": "correct"},
+            {"label": "Répondu", "field": "user"},
+        ]
+        rows = []
+        for q, sans in zip(user_results.questions, user_results.extract_answers()):
+            rows.append({"question": q.text, "correct": q.good_answers, "user": sans})  # type: ignore
+        ui.table(columns=columns, rows=rows, row_key="question")
+
+
+@ui.page("/run/{quizz}")
+def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
+    qpth = Path(f"tests/{quizz}.yml")
+    user_results = FilledQuiz.from_yaml(qpth)
+    print(user_results)
 
     if answers != "":
         user_results.set_answers_from_serialzed(answers)
 
-    if page == "results":
-        with ui.column():
-            ui.markdown("# Résultats")
-            # ui.markdown(f"{user_results.extract_answers()}")
-            columns = [
-                {
-                    "name": "question",
-                    "label": "Question",
-                    "field": "question",
-                    "required": True,
-                    "align": "left",
-                },
-                {"name": "correct", "label": "Attendu", "field": "correct"},
-                {"name": "user", "label": "Répondu", "field": "user"},
-            ]
-            rows = []
-            for q, sans in zip(user_results.questions, user_results.extract_answers()):
-                rows.append({"question": q.text, "correct": q.good_answers, "user": sans})
-            ui.table(columns=columns, rows=rows, row_key="question")
-
+    if page is None:
+        page_num = 0
     else:
-        if page is None:
-            page_num = 0
-        else:
-            page_num = int(page)
-            if page_num >= user_results.number_of_questions:
-                page_num = user_results.number_of_questions - 1
+        page_num = page
 
-        question = user_results.questions[page_num]
+    question = user_results.questions[page_num]
 
-        with ui.column():
-            ui.markdown(f"# {question.text}")
+    with ui.column():
+        ui.markdown(f"# {question.text}")
 
-            for idx, answer_text in enumerate(question.answers):
-                color = active_color if idx in question.user_answers else inactive_color
-                ui.chip(answer_text, on_click=user_results.on_chip_click(page_num, idx)).props(
-                    f"color={color}"
-                )
+        for idx, answer_text in enumerate(question.answers):
+            color = active_color if idx in question.user_answers else inactive_color
+            ui.chip(answer_text, on_click=user_results.on_chip_click(page_num, idx)).props(
+                f"color={color}"
+            )
 
-            with ui.button_group():
-                if page_num > 0:
-                    ui.button("Précédent", on_click=on_click(user_results, page_num - 1))
+        with ui.button_group():
+            if page_num > 0:
+                ui.button("Précédent", on_click=on_click(user_results, page_num - 1))
 
-                if page_num < user_results.number_of_questions - 1:
-                    ui.button("Suivant", on_click=on_click(user_results, page_num + 1))
-                else:
-                    ui.button("Soumettre", on_click=on_submit(user_results))
+            if page_num < user_results.number_of_questions - 1:
+                ui.button("Suivant", on_click=on_click(user_results, page_num + 1))
+            else:
+                ui.button("Soumettre", on_click=on_submit(user_results))
 
 
 ui.run(port=3000)
