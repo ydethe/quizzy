@@ -73,15 +73,16 @@ def display_results(quizz: str, answers: str):
     qpth = Path(f"tests/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
     user_results.set_answers_from_serialzed(answers)
+    print(user_results)
 
     columns = [
         {"label": "Question", "field": "question", "align": "left"},
-        {"label": "Attendu", "field": "correct"},
-        {"label": "Répondu", "field": "user"},
+        {"label": "Attendu", "field": "correct", "align": "center"},
+        {"label": "Répondu", "field": "user", "align": "center"},
     ]
     rows = []
     for q, sans in zip(user_results.questions, user_results.extract_answers()):
-        rows.append({"question": q.text, "correct": q.good_answers, "user": sans})  # type: ignore
+        rows.append({"question": q.text, "correct": str(q.good_answers), "user": str(sans)})  # type: ignore
 
     # ui.markdown("# Résultats")
     ui.table(columns=columns, rows=rows, row_key="question")
