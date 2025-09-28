@@ -5,7 +5,7 @@ from typing import List
 
 from nicegui import ui, events
 
-from quizzy.Quiz import Quiz
+from Quiz import Quiz
 
 
 class FilledQuiz(Quiz):
@@ -70,7 +70,7 @@ def on_submit(user_results: FilledQuiz):
 
 @ui.page("/results/{quizz}")
 def display_results(quizz: str, answers: str):
-    qpth = Path(f"tests/{quizz}.yml")
+    qpth = Path(f"quizzes/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
     user_results.set_answers_from_serialzed(answers)
 
@@ -97,7 +97,7 @@ def display_results(quizz: str, answers: str):
 
 @ui.page("/run/{quizz}")
 def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
-    qpth = Path(f"tests/{quizz}.yml")
+    qpth = Path(f"quizzes/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
 
     if answers != "":
@@ -129,5 +129,4 @@ def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
                 ui.button("Soumettre", on_click=on_submit(user_results))
 
 
-if __name__ == "__main__":
-    ui.run(port=3000)
+ui.run(title="Quizzy", reload=False, port=8030)

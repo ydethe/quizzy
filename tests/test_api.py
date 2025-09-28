@@ -6,7 +6,7 @@ from quizzy.Quiz import Quiz
 
 class TestQuizzy(unittest.TestCase):
     def test_read_quiz(self):
-        quiz = Quiz.from_yaml(Path("tests/prod.yml"))
+        quiz = Quiz.from_yaml(Path("quizzes/example.yml"))
         print(quiz)
 
 
