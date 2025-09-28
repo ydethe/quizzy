@@ -79,6 +79,7 @@ def display_results(quizz: str, answers: str):
         {"label": "Verdict", "field": "verdict", "align": "center"},
     ]
     rows = []
+
     count_ok = 0
     count_total = 0
     for q, sans in zip(user_results.questions, user_results.extract_answers()):
@@ -88,9 +89,10 @@ def display_results(quizz: str, answers: str):
         symb = "✅" if verdict else "❌"
         rows.append({"question": q.text, "verdict": symb})  # type: ignore
 
-    ui.markdown("# Résultats")
-    ui.table(columns=columns, rows=rows, row_key="question")
-    ui.markdown(f"## Total : {100*count_ok/count_total:.0f}%")
+    with ui.column():
+        ui.markdown("# Résultats")
+        ui.table(columns=columns, rows=rows, row_key="question")
+        ui.markdown(f"### Total : {100*count_ok/count_total:.0f}%")
 
 
 @ui.page("/run/{quizz}")
@@ -127,4 +129,5 @@ def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
                 ui.button("Soumettre", on_click=on_submit(user_results))
 
 
-ui.run(port=3000)
+if __name__ == "__main__":
+    ui.run(port=3000)

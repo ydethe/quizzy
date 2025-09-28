@@ -9,12 +9,11 @@ requires-python = ">=3.11"
 readme = "README.md"
 description = ""
 dependencies = [
-    "fastapi[standard]>=0.117.1",
+    "gunicorn>=23.0.0",
     "nicegui>=2.24.2",
     "pydantic>=2.11.9",
     "pydantic-settings>=2.10.1",
     "pyyaml>=6.0.2",
-    "streamlit>=1.49.1",
 ]
 
 [project.urls]
