@@ -16,5 +16,5 @@ EXPOSE 8030
 # Run app with gunicorn + uvicorn workers
 CMD ["python", "main.py"]
 
-# sudo docker build -t quizzy .
-# sudo docker run -p 8030:8030 -v ./quizzes:/app/quizzes:ro quizzy
+# sudo docker build -t ydethe/quizzy .
+# sudo docker run -p 8030:8030 -v ./quizzes:/app/quizzes:ro ydethe/quizzy
