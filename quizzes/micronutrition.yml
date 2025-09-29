@@ -1,0 +1,37 @@
+message_accueil: |
+  Bienvenue sur le quizz micronutrition !
+  Prêt à démarrer ?
+  Attention, plusieurs réponses peuvent être possibles !
+text_bouton: C'est parti !
+questions:
+- text: Avec environ combien de follicules commence-t-on la puberté ?
+  answers:
+  - 40 000 000
+  - 4 000 000
+  - 400 000
+  - 40 000
+  good_answers:
+  - 2
+- text: Parmi ces éléments, lesquels sont des co-facteurs d'enzymes anti-oxydant ?
+  answers:
+  - Calcium
+  - Sélénium
+  - Zinc
+  - Potassium
+  good_answers:
+  - 1
+  - 2
+- text: Parmi ces proposition, lesquelles sont vraies ?
+  answers:
+  - Les marques épigénétiques sont irréversibles
+  - Le phénotype est dépendant de l'environnement
+  - La péri-conception joue sur l'épigénétique
+  - Les marques épigénétiques sont transmises sur plusieurs générations
+  good_answers:
+  - 1
+  - 2
+  - 3
+echelle_scores:
+  100: BRAVO ! Vous êtes un expert en micronutrition !
+  50: Pas mal, vous avez acquis des bases solides en micronutrition. Regardez de nouveau la vidéo pour devenir expert !
+  0: Encore un petit effort. Regardez de nouveau la vidéo et vous allez y arriver !

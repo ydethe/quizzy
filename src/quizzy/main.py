@@ -89,10 +89,17 @@ def display_results(quizz: str, answers: str):
         symb = "✅" if verdict else "❌"
         rows.append({"question": q.text, "verdict": symb})  # type: ignore
 
+    score = int(100 * count_ok / count_total)
+
     with ui.column():
         ui.markdown("# Résultats")
         ui.table(columns=columns, rows=rows, row_key="question")
-        ui.markdown(f"### Total : {100*count_ok/count_total:.0f}%")
+        ui.markdown(f"### Bonnes réponses : {score}%")
+
+        for score_key in user_results.echelle_scores.keys():
+            if score >= score_key:
+                ui.markdown(f"#### {user_results.echelle_scores[score_key]}")
+                break
 
 
 @ui.page("/run/{quizz}")
@@ -129,4 +136,17 @@ def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
                 ui.button("Soumettre", on_click=on_submit(user_results))
 
 
-ui.run(title="Quizzy", reload=False, port=8030)
+@ui.page("/accueil/{quizz}")
+def accueil_quizz(quizz: str):
+    qpth = Path(f"quizzes/{quizz}.yml")
+    user_results = FilledQuiz.from_yaml(qpth)
+
+    with ui.column():
+        ui.markdown(f"# {user_results.message_accueil}")
+
+        ui.button(
+            user_results.text_bouton, on_click=lambda: ui.navigate.to(f"/run/{user_results.name}")
+        )
+
+
+ui.run(title="Quizzy", reload=True, port=8030)

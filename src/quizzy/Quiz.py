@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Set
+from typing import Dict, List, Optional, Set
 import json
 
 import yaml
@@ -20,7 +20,11 @@ class Question(BaseModel):
 
 class Quiz(BaseModel):
     name: Optional[str] = ""
+    message_accueil: str
+    text_bouton: str
     questions: List[Question]
+    # echelle_scores: List[Dict[int,str]]
+    echelle_scores: Dict[int, str]
 
     @property
     def number_of_questions(self) -> int:
