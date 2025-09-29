@@ -1,6 +1,8 @@
 message_accueil: |
-  Bienvenue sur le quizz micronutrition !
+  # Bienvenue sur le quizz micronutrition !
+
   Prêt à démarrer ?
+
   Attention, plusieurs réponses peuvent être possibles !
 text_bouton: C'est parti !
 questions:

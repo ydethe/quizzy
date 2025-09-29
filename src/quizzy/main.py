@@ -142,7 +142,7 @@ def accueil_quizz(quizz: str):
     user_results = FilledQuiz.from_yaml(qpth)
 
     with ui.column():
-        ui.markdown(f"# {user_results.message_accueil}")
+        ui.markdown(user_results.message_accueil)
 
         ui.button(
             user_results.text_bouton, on_click=lambda: ui.navigate.to(f"/run/{user_results.name}")
