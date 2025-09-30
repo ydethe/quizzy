@@ -157,6 +157,7 @@ def accueil_quizz(quizz: str):
 ui.run_with(
     fastapi_app,
     title="Quizzy",
+    favicon="🎓",
     storage_secret="pick your private secret here",  # NOTE setting a secret is optional but allows for persistent storage per user
 )
 

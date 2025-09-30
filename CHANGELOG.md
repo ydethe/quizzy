@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.1.2...HEAD)</small>
 
+### Added
+
+- Added all tests script ([23b8453](https://github.com/ydethe/quizzy/commit/23b845396cda6fa6e67e7133aa5fdfa6262e4d07) by Yann de The).
+
 <!-- insertion marker -->
 ## [v0.1.2](https://github.com/ydethe/quizzy/releases/tag/v0.1.2) - 2025-09-30
 
