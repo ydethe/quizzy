@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added github action to push docker image ([6010fdd](https://github.com/ydethe/quizzy/commit/6010fdd1cc3799c91eaf1e49c269591a3a7e4153) by Yann de The).
 - Added welcome page and score comment ([206d0b7](https://github.com/ydethe/quizzy/commit/206d0b719872d76ba01bdc72fa96e121bc3d943b) by Yann de The).
 - Added dockerfile ([eb95609](https://github.com/ydethe/quizzy/commit/eb956094938e92e7f351d0a5fa8ff5d1c984954a) by Yann de The).
 - Added results table ([8555a8c](https://github.com/ydethe/quizzy/commit/8555a8cf228abfa244d799377d85e6437b5a4f01) by Yann de The).

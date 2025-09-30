@@ -1528,7 +1528,7 @@ wheels = [
 
 [[package]]
 name = "quizzy"
-version = "0.1.dev26+geb95609.d20250928"
+version = "0.1+d20250930"
 source = { editable = "." }
 dependencies = [
     { name = "gunicorn" },

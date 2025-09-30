@@ -3,9 +3,14 @@ from base64 import b64decode, b64encode
 import json
 from typing import List
 
+import uvicorn
+from fastapi import FastAPI
 from nicegui import ui, events
 
 from .Quiz import Quiz
+
+
+fastapi_app = FastAPI()
 
 
 class FilledQuiz(Quiz):
@@ -149,4 +154,12 @@ def accueil_quizz(quizz: str):
         )
 
 
-ui.run(title="Quizzy", reload=True, port=8030)
+# ui.run(title="Quizzy", reload=True, port=8030)
+
+ui.run_with(
+    fastapi_app,
+    storage_secret="pick your private secret here",  # NOTE setting a secret is optional but allows for persistent storage per user
+)
+
+if __name__ == "__main__":
+    uvicorn.run("quizzy.__main__:fastapi_app", port=8030, log_level="info", reload=True)
