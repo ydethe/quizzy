@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added favicon ([b9b9d33](https://github.com/ydethe/quizzy/commit/b9b9d3338555d31b1e40e0c0d6d336800d2eb71e) by Yann de The).
+- Added favicon ([410d3c9](https://github.com/ydethe/quizzy/commit/410d3c9e62fcc9b179627576243e3b0a09cab5db) by Yann de The).
 
 <!-- insertion marker -->
 ## [v0.1.4](https://github.com/ydethe/quizzy/releases/tag/v0.1.4) - 2025-09-30
