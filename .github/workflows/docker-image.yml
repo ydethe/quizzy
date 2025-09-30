@@ -1,4 +1,5 @@
 name: Docker Image CI
+# https://coolify.io/docs/knowledge-base/git/github/github-actions
 
 on:
   push:
@@ -56,3 +57,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Deploy to Coolify
+        run: |
+         curl --request GET '${{ secrets.COOLIFY_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
