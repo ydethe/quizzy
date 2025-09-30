@@ -1,8 +1,7 @@
 name: Docker Image CI
 # https://coolify.io/docs/knowledge-base/git/github/github-actions
 
-on:
-  - '**'
+on: push
 
 # on:
 #   push:
