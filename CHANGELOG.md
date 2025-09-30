@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v0.1.5](https://github.com/ydethe/quizzy/releases/tag/v0.1.5) - 2025-09-30
 
-<small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.1.4...HEAD)</small>
+<small>[Compare with v0.1.4](https://github.com/ydethe/quizzy/compare/v0.1.4...v0.1.5)</small>
 
 ### Added
 
@@ -18,7 +18,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed pipeline ([3bf2b8b](https://github.com/ydethe/quizzy/commit/3bf2b8bb1ad72e1e6fbc8d4b2c4703d6d7d37548) by Yann de The).
 
-<!-- insertion marker -->
 ## [v0.1.4](https://github.com/ydethe/quizzy/releases/tag/v0.1.4) - 2025-09-30
 
 <small>[Compare with v0.1.3](https://github.com/ydethe/quizzy/compare/v0.1.3...v0.1.4)</small>
