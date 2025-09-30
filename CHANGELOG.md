@@ -6,15 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v0.1.3](https://github.com/ydethe/quizzy/releases/tag/v0.1.3) - 2025-09-30
 
-<small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.1.2...HEAD)</small>
+<small>[Compare with v0.1.2](https://github.com/ydethe/quizzy/compare/v0.1.2...v0.1.3)</small>
 
 ### Added
 
+- Added favicon ([8a9903a](https://github.com/ydethe/quizzy/commit/8a9903aaf49dc042e04f91a36c594fbbd0c6d397) by Yann de The).
 - Added all tests script ([23b8453](https://github.com/ydethe/quizzy/commit/23b845396cda6fa6e67e7133aa5fdfa6262e4d07) by Yann de The).
 
-<!-- insertion marker -->
 ## [v0.1.2](https://github.com/ydethe/quizzy/releases/tag/v0.1.2) - 2025-09-30
 
 <small>[Compare with v0.1.1](https://github.com/ydethe/quizzy/compare/v0.1.1...v0.1.2)</small>
