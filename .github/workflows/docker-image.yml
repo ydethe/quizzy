@@ -2,9 +2,12 @@ name: Docker Image CI
 # https://coolify.io/docs/knowledge-base/git/github/github-actions
 
 on:
-  push:
-    tags:
-      - '**'
+  - '**'
+
+# on:
+#   push:
+#     tags:
+#       - '**'
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -36,7 +39,7 @@ jobs:
           python-version-file: "pyproject.toml"
 
       - name: Install dependencies
-        run: uv sync --all-extras --all-groups
+        run: uv sync --all-groups
 
       - name: Test with pytest
         run: bash all_tests.sh
