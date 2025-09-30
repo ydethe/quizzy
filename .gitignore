@@ -1,6 +1,7 @@
 .root
 *.eml
 *.mbox
+htmldoc/
 migrations
 .gradio
 Maildir/

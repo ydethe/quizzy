@@ -36,13 +36,15 @@ source = "scm"
 
 [dependency-groups]
 dev = [
+    "coverage-badge>=1.1.0",
     "black==22.3.0",
     "ipython>=8.30.0",
     "pre-commit>=4.0.1",
 ]
 doc = [
     "pdoc3>=0.11.3",
-    "pylint>=3.3.2",
+    "genbadge[all]>=1.1.1,<2.0.0",
+    "docstr-coverage>=2.2.0",
 ]
 test = [
     "pytest-asyncio>=0.25.0",
@@ -55,3 +57,29 @@ test = [
     "pytest-sugar>=1.0.0",
     "pytest-xdist>=3.6.1",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = [
+    "--import-mode=importlib",
+    "--html=htmldoc/tests/report.html",
+    "--self-contained-html",
+    "--junitxml=htmldoc/junit.xml",
+    "--cov-config=tests/coverage.conf",
+    "--cov=quizzy",
+    "--doctest-modules",
+
+]
+testpaths = [
+    "tests/",
+]
+
+[tool.pdm.scripts]
+doc.shell = """\
+    mkdir -p htmldoc/quizzy
+    pdoc --html --force --config latex_math=True -o htmldoc quizzy
+    coverage html -d htmldoc/coverage --rcfile tests/coverage.conf
+    coverage xml -o htmldoc/coverage/coverage.xml --rcfile tests/coverage.conf
+    docstr-coverage src/quizzy -miP -sp -is -idel --skip-file-doc --badge=htmldoc/quizzy/doc_badge.svg
+    genbadge coverage -l -i htmldoc/coverage/coverage.xml -o htmldoc/quizzy/cov_badge.svg
+"""

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.1.2](https://github.com/ydethe/quizzy/releases/tag/v0.1.2) - 2025-09-30
+
+<small>[Compare with v0.1.1](https://github.com/ydethe/quizzy/compare/v0.1.1...v0.1.2)</small>
+
+### Added
+
+- Added coolify deployment in pipeline ([2a9d02f](https://github.com/ydethe/quizzy/commit/2a9d02fbe73eb994ac50eceebc7667d62722f9cf) by Yann de The).
+
 ## [v0.1.1](https://github.com/ydethe/quizzy/releases/tag/v0.1.1) - 2025-09-30
 
 <small>[Compare with first commit](https://github.com/ydethe/quizzy/compare/2fcfcf8a69285cdbb4ee301cfc0f7745e24cf528...v0.1.1)</small>

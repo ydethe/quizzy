@@ -23,7 +23,6 @@ class Quiz(BaseModel):
     message_accueil: str
     text_bouton: str
     questions: List[Question]
-    # echelle_scores: List[Dict[int,str]]
     echelle_scores: Dict[int, str]
 
     @property

@@ -1,3 +1,10 @@
+message_accueil: |
+  # Bienvenue sur le quizz geek !
+
+  Prêt à démarrer ?
+
+  Attention, plusieurs réponses peuvent être possibles !
+text_bouton: C'est parti !
 questions:
 - text: Quelle est la capitale de la France ?
   answers:
@@ -15,3 +22,7 @@ questions:
   - Werner von Braun
   good_answers:
   - 1
+echelle_scores:
+  100: BRAVO !
+  50: Pas mal
+  0: Encore un petit effort

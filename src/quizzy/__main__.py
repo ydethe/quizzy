@@ -154,8 +154,6 @@ def accueil_quizz(quizz: str):
         )
 
 
-# ui.run(title="Quizzy", reload=True, port=8030)
-
 ui.run_with(
     fastapi_app,
     title="Quizzy",
@@ -164,5 +162,5 @@ ui.run_with(
 
 if __name__ == "__main__":
     uvicorn.run(
-        "quizzy.__main__:fastapi_app", host="0.0.0.0", port=8030, log_level="info", reload=True
+        "quizzy.__main__:fastapi_app", host="0.0.0.0", port=8030, log_level="info", reload=False
     )
