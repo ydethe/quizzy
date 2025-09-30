@@ -5,7 +5,7 @@ from typing import List
 
 from nicegui import ui, events
 
-from Quiz import Quiz
+from .Quiz import Quiz
 
 
 class FilledQuiz(Quiz):
