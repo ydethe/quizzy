@@ -158,8 +158,11 @@ def accueil_quizz(quizz: str):
 
 ui.run_with(
     fastapi_app,
+    title="Quizzy",
     storage_secret="pick your private secret here",  # NOTE setting a secret is optional but allows for persistent storage per user
 )
 
 if __name__ == "__main__":
-    uvicorn.run("quizzy.__main__:fastapi_app", port=8030, log_level="info", reload=True)
+    uvicorn.run(
+        "quizzy.__main__:fastapi_app", host="0.0.0.0", port=8030, log_level="info", reload=True
+    )
