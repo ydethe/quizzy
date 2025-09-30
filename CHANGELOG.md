@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added favicon ([410d3c9](https://github.com/ydethe/quizzy/commit/410d3c9e62fcc9b179627576243e3b0a09cab5db) by Yann de The).
 
+### Fixed
+
+- Fixed pipeline ([3bf2b8b](https://github.com/ydethe/quizzy/commit/3bf2b8bb1ad72e1e6fbc8d4b2c4703d6d7d37548) by Yann de The).
+
 <!-- insertion marker -->
 ## [v0.1.4](https://github.com/ydethe/quizzy/releases/tag/v0.1.4) - 2025-09-30
 

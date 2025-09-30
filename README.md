@@ -1,9 +1,10 @@
-# Directus Sync
+# Quizzy
 
-Bi-directionnal sync between directus and CardDAV server
+## Overview
 
-You can store your password in the system keyring using the command-line tool:
+Quizzy allows you to design quizzes, in a quick and clean way.
 
-    $ icloud --username=jappleseed@apple.com
-    Enter iCloud password for jappleseed@apple.com:
-    Save password in keyring? (y/N)
+## Documentation
+
+https://ydethe.github.io/quizzy/quizzy
+

@@ -1,2 +1,0 @@
-- [src/quizzy/directus_sync.py#L201](src/quizzy/directus_sync.py#L201): Download photo raw bytes
-- [src/quizzy/directus_sync.py#L202](src/quizzy/directus_sync.py#L202): Fill other directus tables
