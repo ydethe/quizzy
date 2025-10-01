@@ -1,10 +1,10 @@
 message_accueil: |
-  # Bienvenue sur le quizz **micronutrition** ! 🥑🧬
+  # Bienvenue sur le quizz **micronutrition** !
 
-  Prêt à démarrer ? 🚀💪
+  Prêt à démarrer ?
 
-  ⚠️ Attention, plusieurs réponses peuvent être possibles ! ✅❌
-text_bouton: C'est parti ! 🎯🎉
+  Attention, plusieurs réponses peuvent être possibles !
+text_bouton: C'est parti !
 questions:
 - text: Avec environ combien de follicules commence-t-on la puberté ?
   answers:
