@@ -4,10 +4,6 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
 COPY dist/*.whl .
 RUN python -m pip install --no-cache-dir *.whl && \
     rm -f *.whl
