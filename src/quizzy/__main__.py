@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from base64 import b64decode, b64encode
 import json
@@ -5,9 +6,12 @@ from typing import List
 
 import uvicorn
 from fastapi import FastAPI
-from nicegui import ui, events
+from nicegui import Client, ui, events
+from pony.orm import db_session
 
 from .Quiz import Quiz
+from .database import Etudiant, Session
+from .config import Examen
 
 
 fastapi_app = FastAPI()
@@ -52,15 +56,48 @@ class FilledQuiz(Quiz):
             for idx in qans:
                 self.questions[page].user_answers.add(idx)
 
+    def get_score(self) -> float:
+        count_ok = 0
+        count_total = 0
+        for q, sans in zip(self.questions, self.extract_answers()):
+            verdict = set(q.good_answers) == set(sans)
+            count_ok += 1 if verdict else 0
+            count_total += 1
+
+        score = int(100 * count_ok / count_total)
+
+        return score
+
 
 active_color = "blue"
 inactive_color = "grey"
 
 
+def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
+    with db_session:
+        query = Etudiant.select_by_sql("SELECT * FROM Etudiant p WHERE p.email==$examen.email")
+        # query = select(e for e in Etudiant if e.email == examen.email)
+        if len(query) == 0:
+            e = Etudiant(nom=examen.nom, prenom=examen.prenom, email=examen.email)
+        else:
+            e = query[0]
+
+    with db_session:
+        Session(
+            quiz_nom=examen.quizz,
+            quiz_hash=quizz.hash,
+            etudiant_id=e.id,
+            date=datetime.now(),
+            reponses=quizz.serialize_answers(),
+            score=quizz.get_score(),
+            ip_origine=client_ip,
+        )
+
+
 def on_click(user_results: FilledQuiz, page: int):
     def callback(e: events.ClickEventArguments):
         sans = user_results.serialize_answers()
-        ui.navigate.to(f"/run/{user_results.name}?page={page}&answers={sans}", new_tab=False)
+        ui.navigate.to(f"/run?token={user_results.token}&page={page}&answers={sans}", new_tab=False)
 
     return callback
 
@@ -68,16 +105,22 @@ def on_click(user_results: FilledQuiz, page: int):
 def on_submit(user_results: FilledQuiz):
     def callback(e: events.ClickEventArguments):
         sans = user_results.serialize_answers()
-        ui.navigate.to(f"/results/{user_results.name}?answers={sans}", new_tab=False)
+        ui.navigate.to(f"/results?token={user_results.token}&answers={sans}", new_tab=False)
 
     return callback
 
 
-@ui.page("/results/{quizz}")
-def display_results(quizz: str, answers: str):
+@ui.page("/results")
+def display_results(client: Client, token: str, answers: str):
+    # await client.connected()
+    client_ip = client.environ["asgi.scope"]["client"][0]
+
+    examen = Examen.from_encrypted(token)
+    quizz = examen.quizz
     qpth = Path(f"quizzes/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
     user_results.set_answers_from_serialzed(answers)
+    user_results.token = token
 
     columns = [
         {"label": "Question", "field": "question", "align": "left"},
@@ -85,16 +128,12 @@ def display_results(quizz: str, answers: str):
     ]
     rows = []
 
-    count_ok = 0
-    count_total = 0
     for q, sans in zip(user_results.questions, user_results.extract_answers()):
         verdict = set(q.good_answers) == set(sans)
-        count_ok += 1 if verdict else 0
-        count_total += 1
         symb = "✅" if verdict else "❌"
         rows.append({"question": q.text, "verdict": symb})  # type: ignore
 
-    score = int(100 * count_ok / count_total)
+    score = user_results.get_score()
 
     with ui.column():
         ui.markdown("# Résultats")
@@ -106,11 +145,17 @@ def display_results(quizz: str, answers: str):
                 ui.markdown(f"#### {user_results.echelle_scores[score_key]}")
                 break
 
+    enregistre_examen(examen, user_results, client_ip)
 
-@ui.page("/run/{quizz}")
-def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
+
+@ui.page("/run")
+def run_quizz(token: str, page: int | None = None, answers: str = ""):
+    examen = Examen.from_encrypted(token)
+    quizz = examen.quizz
+
     qpth = Path(f"quizzes/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
+    user_results.token = token
 
     if answers != "":
         user_results.set_answers_from_serialzed(answers)
@@ -141,16 +186,20 @@ def run_quizz(quizz: str, page: int | None = None, answers: str = ""):
                 ui.button("Soumettre", on_click=on_submit(user_results))
 
 
-@ui.page("/accueil/{quizz}")
-def accueil_quizz(quizz: str):
+@ui.page("/accueil")
+def accueil_quizz(token: str):
+    examen = Examen.from_encrypted(token)
+    quizz = examen.quizz
     qpth = Path(f"quizzes/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
+    user_results.token = token
 
     with ui.column():
         ui.markdown(user_results.message_accueil)
 
         ui.button(
-            user_results.text_bouton, on_click=lambda: ui.navigate.to(f"/run/{user_results.name}")
+            user_results.text_bouton,
+            on_click=lambda: ui.navigate.to(f"/run?token={user_results.token}"),
         )
 
 

@@ -10,6 +10,7 @@ emails
 *.bak
 venv
 *.xls*
+*.sqlite
 *.raw
 *.pkl
 .pdm.toml
