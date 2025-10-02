@@ -119,22 +119,34 @@ def display_admin():
         choices.append(quizz_name)
 
     ui.markdown("# Administration\n## Création d'un lien")
-    select1 = ui.select(choices, label="Nom du quiz")
+    select = ui.select(choices, label="Nom du quiz")
     nom = ui.input(label="Nom")
     prenom = ui.input(label="Prénom")
     email = ui.input(label="Email")
 
-    link_label = ui.label()
+    token_label = ui.label()
 
-    def on_create(e: events.ClickEventArguments):
-        print(email.value)
-        print(dir(email))
-        exam = Examen(quizz=select1.value, email=email.value, nom=nom.value, prenom=prenom.value)
-        m = exam.get_encrypted()
+    class _link_data:
+        def __init__(self):
+            self.token = ""
 
-        link_label.set_text(f"/accueil?token={m}")
+        def on_create(self, e: events.ClickEventArguments):
+            exam = Examen(quizz=select.value, email=email.value, nom=nom.value, prenom=prenom.value)
+            m = exam.get_encrypted()
 
-    ui.button("Créer lien", on_click=on_create)
+            token_label.set_text(m)
+            self.token = m
+            goto_btn.enable()
+
+        def on_goto(self, e: events.ClickEventArguments):
+            ui.navigate.to(f"/accueil?token={self.token}")
+
+    ld = _link_data()
+
+    with ui.button_group():
+        ui.button("Créer lien", on_click=ld.on_create)
+        goto_btn = ui.button("Aller au quiz", on_click=ld.on_goto)
+        goto_btn.disable()
 
 
 @ui.page("/results")
