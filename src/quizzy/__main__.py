@@ -111,8 +111,8 @@ def on_submit(user_results: FilledQuiz):
 
 
 @ui.page("/results")
-def display_results(client: Client, token: str, answers: str):
-    # await client.connected()
+async def display_results(client: Client, token: str, answers: str):
+    await client.connected()
     client_ip = client.environ["asgi.scope"]["client"][0]
 
     examen = Examen.from_encrypted(token)
