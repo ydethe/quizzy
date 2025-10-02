@@ -6,15 +6,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v0.2.0](https://github.com/ydethe/quizzy/releases/tag/v0.2.0) - 2025-10-02
 
-<small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.1.11...HEAD)</small>
+<small>[Compare with v0.1.11](https://github.com/ydethe/quizzy/compare/v0.1.11...v0.2.0)</small>
 
 ### Added
 
+- Added exams logging ([d416933](https://github.com/ydethe/quizzy/commit/d416933e72a42fac187c1b4e972d5988e1ff290f) by Yann de The).
 - Added admin page ([d084dff](https://github.com/ydethe/quizzy/commit/d084dff9644eb98f9c469566f10db9ff29103310) by Yann de The).
 
-<!-- insertion marker -->
 ## [v0.1.11](https://github.com/ydethe/quizzy/releases/tag/v0.1.11) - 2025-10-02
 
 <small>[Compare with v0.1.10](https://github.com/ydethe/quizzy/compare/v0.1.10...v0.1.11)</small>
