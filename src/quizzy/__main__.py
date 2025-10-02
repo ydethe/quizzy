@@ -110,10 +110,37 @@ def on_submit(user_results: FilledQuiz):
     return callback
 
 
+@ui.page("/admin")
+def display_admin():
+    qpth = Path("quizzes")
+    choices = []
+    for file in qpth.glob("*.yml"):
+        quizz_name = file.stem
+        choices.append(quizz_name)
+
+    ui.markdown("# Administration\n## Création d'un lien")
+    select1 = ui.select(choices, label="Nom du quiz")
+    nom = ui.input(label="Nom")
+    prenom = ui.input(label="Prénom")
+    email = ui.input(label="Email")
+
+    link_label = ui.label()
+
+    def on_create(e: events.ClickEventArguments):
+        print(email.value)
+        print(dir(email))
+        exam = Examen(quizz=select1.value, email=email.value, nom=nom.value, prenom=prenom.value)
+        m = exam.get_encrypted()
+
+        link_label.set_text(f"/accueil?token={m}")
+
+    ui.button("Créer lien", on_click=on_create)
+
+
 @ui.page("/results")
 async def display_results(client: Client, token: str, answers: str):
     await client.connected()
-    client_ip = client.environ["asgi.scope"]["client"][0]
+    client_ip: str = client.environ["asgi.scope"]["client"][0]
 
     examen = Examen.from_encrypted(token)
     quizz = examen.quizz
@@ -189,13 +216,14 @@ def run_quizz(token: str, page: int | None = None, answers: str = ""):
 @ui.page("/accueil")
 def accueil_quizz(token: str):
     examen = Examen.from_encrypted(token)
+
     quizz = examen.quizz
     qpth = Path(f"quizzes/{quizz}.yml")
     user_results = FilledQuiz.from_yaml(qpth)
     user_results.token = token
 
     with ui.column():
-        ui.markdown(user_results.message_accueil)
+        ui.markdown(user_results.message_accueil.format(prenom=examen.prenom))
 
         ui.button(
             user_results.text_bouton,
@@ -212,5 +240,5 @@ ui.run_with(
 
 if __name__ == "__main__":
     uvicorn.run(
-        "quizzy.__main__:fastapi_app", host="0.0.0.0", port=8030, log_level="info", reload=False
+        "quizzy.__main__:fastapi_app", host="0.0.0.0", port=8030, log_level="info", reload=True
     )
