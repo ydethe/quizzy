@@ -12,6 +12,7 @@ from pony.orm import db_session
 from .Quiz import Quiz
 from .database import Etudiant, Session
 from .config import Examen
+from . import logger
 
 
 fastapi_app = FastAPI()
@@ -185,6 +186,9 @@ async def display_results(client: Client, token: str, answers: str):
                 break
 
     enregistre_examen(examen, user_results, client_ip)
+    logger.info(
+        f"Exam taken: {examen.prenom} {examen.nom} <{examen.email}> @ {client_ip} - answers: {user_results.serialize_answers()} - token: {user_results.token} - score: {user_results.get_score()}"
+    )
 
 
 @ui.page("/run")

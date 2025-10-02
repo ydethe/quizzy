@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added admin page ([5094324](https://github.com/ydethe/quizzy/commit/5094324185687a09714b156ba531cf12fa46453d) by Yann de The).
+- Added admin page ([d084dff](https://github.com/ydethe/quizzy/commit/d084dff9644eb98f9c469566f10db9ff29103310) by Yann de The).
 
 <!-- insertion marker -->
 ## [v0.1.11](https://github.com/ydethe/quizzy/releases/tag/v0.1.11) - 2025-10-02
