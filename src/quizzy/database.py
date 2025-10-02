@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 from pony.orm import Database, Required, PrimaryKey, Set
 
 
@@ -24,5 +25,6 @@ class Etudiant(db.Entity):
     email = Required(str)
 
 
-db.bind(provider="sqlite", filename="quizzy.sqlite", create_db=True)
+db_pth = Path("quizzes") / "quizzy.sqlite"
+db.bind(provider="sqlite", filename=str(db_pth.absolute()), create_db=True)
 db.generate_mapping(create_tables=True)
