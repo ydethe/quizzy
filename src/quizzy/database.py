@@ -24,5 +24,5 @@ class Etudiant(db.Entity):
     email = Required(str)
 
 
-db.bind(provider="sqlite", filename="quizzy.sqlite", create_db=True)
+db.bind(provider="sqlite", filename="quizzes/quizzy.sqlite", create_db=True)
 db.generate_mapping(create_tables=True)
