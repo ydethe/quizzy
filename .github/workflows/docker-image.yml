@@ -45,7 +45,8 @@ jobs:
       - name: Test with pytest
         run: bash all_tests.sh
         env:
-          SECRET: c987bbeb20802a15acfb92c893a121c9
+          AES_SECRET: c987bbeb20802a15acfb92c893a121c9
+          JWT_SECRET: ca1e64e993125ae6568a4f8992e4268389c3157daddb8687b5f40164b0d436e3
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
