@@ -112,6 +112,11 @@ def on_submit(user_results: FilledQuiz):
     return callback
 
 
+@fastapi_app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
+
 @ui.page("/admin")
 def display_admin(user: AuthUser = Depends(get_current_user)):
     qpth = Path("quizzes")

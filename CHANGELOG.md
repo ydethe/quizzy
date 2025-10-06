@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v0.2.2](https://github.com/ydethe/quizzy/releases/tag/v0.2.2) - 2025-10-06
+
+<small>[Compare with v0.2.1](https://github.com/ydethe/quizzy/compare/v0.2.1...v0.2.2)</small>
+
+### Added
+
+- Added jwt encryption ([015a44d](https://github.com/ydethe/quizzy/commit/015a44dc10b1b50b6cbc845209a665436b736f3f) by Yann de The).
+
 ## [v0.2.1](https://github.com/ydethe/quizzy/releases/tag/v0.2.1) - 2025-10-06
 
 <small>[Compare with v0.2.0](https://github.com/ydethe/quizzy/compare/v0.2.0...v0.2.1)</small>
