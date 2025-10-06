@@ -12,8 +12,7 @@ USER quizzy-user
 WORKDIR /app
 
 COPY dist/*.whl .
-RUN python -m pip install --no-cache-dir *.whl && \
-    rm -f *.whl
+RUN python -m pip install --no-cache-dir *.whl && rm -f *.whl
 
 # Expose port
 EXPOSE 8030
