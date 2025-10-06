@@ -5,10 +5,11 @@ import json
 from typing import List
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from nicegui import Client, ui, events
 from pony.orm import db_session
 
+from .auth import AuthUser, get_current_user
 from .Quiz import Quiz
 from .database import Etudiant, Session
 from .config import Examen
@@ -112,7 +113,7 @@ def on_submit(user_results: FilledQuiz):
 
 
 @ui.page("/admin")
-def display_admin():
+def display_admin(user: AuthUser = Depends(get_current_user)):
     qpth = Path("quizzes")
     choices = []
     for file in qpth.glob("*.yml"):

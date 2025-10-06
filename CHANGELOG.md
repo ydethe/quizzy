@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added jwt encryption ([7aec454](https://github.com/ydethe/quizzy/commit/7aec454540d46008736d86530b24ecfe5c436847) by Yann de The).
+- Added jwt encryption ([d074e8a](https://github.com/ydethe/quizzy/commit/d074e8ad3ebefe35b342c6712455e94bc64a48d4) by Yann de The).
 
 <!-- insertion marker -->
 ## [v0.2.0](https://github.com/ydethe/quizzy/releases/tag/v0.2.0) - 2025-10-02
