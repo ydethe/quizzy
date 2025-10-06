@@ -1,4 +1,6 @@
+from datetime import datetime
 import jwt
+import json
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel
 
@@ -19,16 +21,28 @@ class Examen(BaseModel):
 
     def get_encrypted(self) -> str:
         from .config import config
+        from .crypto import encrypt_payload
 
-        encoded = jwt.encode(self.model_dump(), config.SECRET, algorithm="HS256")
+        dt_now = datetime.now().isoformat()
+        aes_payload = dict(
+            token_creation_date=dt_now, exam_data=encrypt_payload(self.model_dump_json())
+        )
+
+        encoded = jwt.encode(aes_payload, config.SECRET, algorithm="HS256")
         return encoded
 
     @classmethod
     def from_encrypted(cls, cipher: str):
         from .config import config
+        from .crypto import decrypt_payload
 
-        json = jwt.decode(cipher, config.SECRET, algorithms="HS256")
-        return cls.model_validate(json)
+        aes_payload = jwt.decode(cipher, config.SECRET, algorithms="HS256")
+        # sdt=aes_payload['token_creation_date']
+        # token_creation_date=datetime.fromisoformat(sdt)
+
+        dat = json.loads(decrypt_payload(aes_payload["exam_data"]))
+
+        return cls.model_validate(dat)
 
 
 config = QuizzyConfig()

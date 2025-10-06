@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## Unreleased
+
+<small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.2.0...HEAD)</small>
+
+<!-- insertion marker -->
 ## [v0.2.0](https://github.com/ydethe/quizzy/releases/tag/v0.2.0) - 2025-10-02
 
 <small>[Compare with v0.1.11](https://github.com/ydethe/quizzy/compare/v0.1.11...v0.2.0)</small>

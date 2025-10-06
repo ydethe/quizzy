@@ -1,9 +1,17 @@
 import unittest
 
 from quizzy.config import Examen
+from quizzy.crypto import encrypt_payload, decrypt_payload
 
 
 class TestCrypto(unittest.TestCase):
+    def test_aes(self):
+        data = "jhfdjhfdjéSyrd 123!"
+        cipher = encrypt_payload(data)
+        decipher = decrypt_payload(cipher)
+
+        self.assertEqual(decipher, data)
+
     def test_etudiant(self):
         e = Examen(quizz="micronutrition", email="ydethe@gmail.com", nom="de Thé", prenom="Yann")
 
@@ -21,4 +29,5 @@ class TestCrypto(unittest.TestCase):
 if __name__ == "__main__":
     a = TestCrypto()
 
+    a.test_aes()
     a.test_etudiant()

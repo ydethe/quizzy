@@ -1,4 +1,6 @@
-import jwt
+from Crypto.Random import get_random_bytes
+from Crypto.Cipher import AES
+import base64
 
 from .config import config
 
@@ -13,14 +15,19 @@ def unpad(s: str) -> str:
 
 
 # AES encryption
-def encrypt_AES(plaintext: str) -> str:
+def encrypt_payload(plaintext: str) -> str:
     key = config.SECRET.encode()  # Ensure 32 bytes (AES-256)
-    encoded = jwt.encode(plaintext, key, algorithm="HS256")
-    return encoded
+    iv = get_random_bytes(16)  # Random IV
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    ciphertext = cipher.encrypt(pad(plaintext.encode()))
+    return base64.b64encode(iv + ciphertext).decode()
 
 
 # AES decryption
-def decrypt_AES(ciphertext_b64: str) -> str:
+def decrypt_payload(cipher: str) -> str:
     key = config.SECRET.encode()  # Ensure 32 bytes (AES-256)
-    dat = jwt.decode(ciphertext_b64, key, algorithms="HS256")
-    return dat
+    ciphertext = base64.b64decode(cipher)
+    iv = ciphertext[:16]
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    plaintext = cipher.decrypt(ciphertext[16:])
+    return unpad(plaintext.decode())
