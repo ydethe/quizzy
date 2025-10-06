@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.2.0...HEAD)</small>
 
+### Added
+
+- Added jwt encryption ([7aec454](https://github.com/ydethe/quizzy/commit/7aec454540d46008736d86530b24ecfe5c436847) by Yann de The).
+
 <!-- insertion marker -->
 ## [v0.2.0](https://github.com/ydethe/quizzy/releases/tag/v0.2.0) - 2025-10-02
 

@@ -120,7 +120,7 @@ def display_admin():
         choices.append(quizz_name)
 
     ui.markdown("# Administration\n## Création d'un lien")
-    select = ui.select(choices, label="Nom du quiz")
+    select = ui.select(choices, label="Nom du quiz", value=choices[0])
     nom = ui.input(label="Nom")
     prenom = ui.input(label="Prénom")
     email = ui.input(label="Email")
@@ -132,7 +132,12 @@ def display_admin():
             self.token = ""
 
         def on_create(self, e: events.ClickEventArguments):
+            if select.value is None or email.value == "" or nom.value == "" or prenom.value == "":
+                ui.notify("Remplir le questionnaire")
+                return
+
             exam = Examen(quizz=select.value, email=email.value, nom=nom.value, prenom=prenom.value)
+
             m = exam.get_encrypted()
 
             token_label.set_text(m)

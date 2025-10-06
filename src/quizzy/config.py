@@ -10,7 +10,8 @@ class QuizzyConfig(BaseSettings):
         case_sensitive=True, env_file=".env", env_file_encoding="utf-8", extra="allow"
     )
 
-    SECRET: str
+    AES_SECRET: str
+    JWT_SECRET: str
 
 
 class Examen(BaseModel):
@@ -28,7 +29,7 @@ class Examen(BaseModel):
             token_creation_date=dt_now, exam_data=encrypt_payload(self.model_dump_json())
         )
 
-        encoded = jwt.encode(aes_payload, config.SECRET, algorithm="HS256")
+        encoded = jwt.encode(aes_payload, config.JWT_SECRET, algorithm="HS256")
         return encoded
 
     @classmethod
@@ -36,7 +37,7 @@ class Examen(BaseModel):
         from .config import config
         from .crypto import decrypt_payload
 
-        aes_payload = jwt.decode(cipher, config.SECRET, algorithms="HS256")
+        aes_payload = jwt.decode(cipher, config.JWT_SECRET, algorithms="HS256")
         # sdt=aes_payload['token_creation_date']
         # token_creation_date=datetime.fromisoformat(sdt)
 

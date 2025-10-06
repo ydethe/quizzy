@@ -16,7 +16,7 @@ def unpad(s: str) -> str:
 
 # AES encryption
 def encrypt_payload(plaintext: str) -> str:
-    key = config.SECRET.encode()  # Ensure 32 bytes (AES-256)
+    key = config.AES_SECRET.encode()  # Ensure 32 bytes (AES-256)
     iv = get_random_bytes(16)  # Random IV
     cipher = AES.new(key, AES.MODE_CBC, iv)
     ciphertext = cipher.encrypt(pad(plaintext.encode()))
@@ -25,7 +25,7 @@ def encrypt_payload(plaintext: str) -> str:
 
 # AES decryption
 def decrypt_payload(cipher: str) -> str:
-    key = config.SECRET.encode()  # Ensure 32 bytes (AES-256)
+    key = config.AES_SECRET.encode()  # Ensure 32 bytes (AES-256)
     ciphertext = base64.b64decode(cipher)
     iv = ciphertext[:16]
     cipher = AES.new(key, AES.MODE_CBC, iv)
