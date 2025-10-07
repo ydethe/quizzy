@@ -2,7 +2,7 @@ from datetime import datetime
 import jwt
 import json
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import BaseModel
+from pydantic import AnyHttpUrl, BaseModel
 
 
 class QuizzyConfig(BaseSettings):
@@ -12,6 +12,10 @@ class QuizzyConfig(BaseSettings):
 
     AES_SECRET: str
     JWT_SECRET: str
+    AUTHENTIK_URL: AnyHttpUrl
+    CLIENT_ID: str
+    CLIENT_SECRET: str
+    REDIRECT_URI: AnyHttpUrl
 
 
 class Examen(BaseModel):

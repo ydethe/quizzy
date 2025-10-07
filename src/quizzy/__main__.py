@@ -9,7 +9,7 @@ from fastapi import FastAPI, Depends
 from nicegui import Client, ui, events
 from pony.orm import db_session
 
-from .auth import AuthUser, get_current_user
+from .auth import AuthUser, get_verified_user
 from .Quiz import Quiz
 from .database import Etudiant, Session
 from .config import Examen
@@ -118,7 +118,7 @@ def health_check():
 
 
 @ui.page("/admin")
-def display_admin(user: AuthUser = Depends(get_current_user)):
+def display_admin(user: AuthUser = Depends(get_verified_user)):
     qpth = Path("quizzes")
     choices = []
     for file in qpth.glob("*.yml"):
