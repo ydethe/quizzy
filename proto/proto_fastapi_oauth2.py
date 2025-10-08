@@ -11,7 +11,7 @@ app = FastAPI(title="FastAPI with Authentik OAuth2")
 
 
 @app.get("/")
-async def root():
+async def root() -> Dict[str, str]:
     """Public endpoint"""
     return {
         "message": "Welcome to FastAPI with Authentik OAuth2",
@@ -51,7 +51,8 @@ async def callback(code: str) -> Dict[str, Any]:
 
         if token_response.status_code != 200:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to exchange code for token"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Failed to exchange code for token : '{token_response.text}'",
             )
 
         tokens = token_response.json()
