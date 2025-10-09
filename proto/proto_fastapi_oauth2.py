@@ -1,13 +1,17 @@
 """
 FastAPI OAuth2 integration with Authentik using OpenID Connect
 """
+import time
 from typing import Any, Dict, Optional
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
+import httpx
 from pydantic import BaseModel
 from starlette.middleware.sessions import SessionMiddleware
+from itsdangerous import URLSafeSerializer
+from jose import jwt, jwk
 
 from quizzy.config import config
 
@@ -21,9 +25,11 @@ class Token(BaseModel):
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=config.JWT_SECRET)
 
+serializer = URLSafeSerializer(config.COOKIE_SECRET)
+
 oauth = OAuth()
 oauth.register(
-    "descope",
+    "authentik",
     client_id=config.CLIENT_ID,
     client_secret=config.CLIENT_SECRET,
     server_metadata_url=str(config.OPENID_CONFIG_URL),
@@ -37,38 +43,71 @@ async def root() -> Dict[str, str]:
     return {"message": "FastAPI with Authentik OAuth2"}
 
 
-@app.get("/auth/callback", response_model=Token)
+@app.get("/auth/callback")
 async def auth(request: Request) -> Dict[str, str]:
-    token = await oauth.descope.authorize_access_token(request)
-    print(token)
-    # userinfo = await oauth.descope.parse_id_token(request, token)
-    # token["userinfo"] = userinfo
-    return token
+    token = await oauth.authentik.authorize_access_token(request)
+    access_token: str = token["access_token"]
+
+    # Store the token in a signed cookie
+    response = RedirectResponse(url="/protected")
+    response.set_cookie("access_token", serializer.dumps(access_token), httponly=True, secure=False)
+
+    return response
 
 
 @app.get("/login")
 async def login(request: Request) -> RedirectResponse:
     redirect_uri = request.url_for("auth")
-    return await oauth.descope.authorize_redirect(request, redirect_uri)
+    return await oauth.authentik.authorize_redirect(request, redirect_uri)
 
 
-# def get_current_user(token: str = Depends(...)):
-#     # We skip details; you can extract the Authorization header,
-#     # Then decode & validate JWT (signature, issuer, audience, scopes) using PyJWT
-#     # Or use Descope’s SDK to validate session / token.
-#     # E.g., using DescopeClient.validate_session
-#     from descope import DescopeClient
-#     dc = DescopeClient(project_id=os.getenv("DESCOPE_PROJECT_ID"))
-#     try:
-#         auth_info = dc.validate_session(session_token=token)
-#     except Exception as e:
-#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-#     # Optionally check scopes or claims
-#     return auth_info
+async def get_verified_claims(request: Request):
+    cookie = request.cookies.get("access_token")
+    if not cookie:
+        raise HTTPException(status_code=401, detail="Missing token cookie")
 
-# @app.get("/protected")
-# async def protected_route(current = Depends(get_current_user)):
-#     return {"hello": "protected data", "user": current}
+    try:
+        token = serializer.loads(cookie)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid cookie signature")
+
+    # === Verify JWT signature and claims ===
+    await oauth.authentik.load_server_metadata()
+    jwks_url = oauth.authentik.server_metadata.get("jwks_uri")
+
+    async with httpx.AsyncClient() as client:
+        jwks = (await client.get(jwks_url)).json()["keys"]
+
+    header = jwt.get_unverified_header(token)
+    key = next((k for k in jwks if k["kid"] == header["kid"]), None)
+    if not key:
+        raise HTTPException(status_code=401, detail="Unknown key ID")
+
+    # Build public key
+    public_key = jwk.construct(key)
+
+    try:
+        claims = jwt.decode(
+            token,
+            key=public_key.to_pem().decode(),
+            algorithms=[key["alg"]],
+            audience=config.CLIENT_ID,
+            issuer=oauth.authentik.server_metadata.get("issuer"),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token invalid: {e}")
+
+    # Optional: check expiration
+    if claims.get("exp") and time.time() > claims["exp"]:
+        raise HTTPException(status_code=401, detail="Token expired")
+
+    return claims
+
+
+@app.get("/protected")
+async def protected(user=Depends(get_verified_claims)):
+    return {"message": "Access granted", "user": user}
+
 
 if __name__ == "__main__":
     import uvicorn

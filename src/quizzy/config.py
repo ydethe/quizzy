@@ -12,10 +12,10 @@ class QuizzyConfig(BaseSettings):
 
     AES_SECRET: str
     JWT_SECRET: str
+    COOKIE_SECRET: str
     CLIENT_ID: str
     CLIENT_SECRET: str
     REDIRECT_URI: AnyHttpUrl
-    APP_SLUG: str
     OPENID_CONFIG_URL: AnyHttpUrl
 
 
