@@ -9,14 +9,14 @@ requires-python = ">=3.11"
 readme = "README.md"
 description = ""
 dependencies = [
+    "authlib[crypto]>=1.6.5",
     "gunicorn>=23.0.0",
+    "httpx>=0.28.1",
     "nicegui>=2.24.2",
     "pony>=0.7.19",
-    "pycryptodome>=3.23.0",
     "pydantic>=2.11.9",
     "pydantic-settings>=2.10.1",
     "pyjwt>=2.10.1",
-    "python-jose>=3.5.0",
     "pyyaml>=6.0.2",
 ]
 

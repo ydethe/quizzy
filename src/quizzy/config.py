@@ -12,27 +12,11 @@ class QuizzyConfig(BaseSettings):
 
     AES_SECRET: str
     JWT_SECRET: str
-    AUTHENTIK_URL: AnyHttpUrl
     CLIENT_ID: str
     CLIENT_SECRET: str
     REDIRECT_URI: AnyHttpUrl
     APP_SLUG: str
-
-    @property
-    def AUTHORIZATION_URL(self) -> str:
-        return f"{self.AUTHENTIK_URL}/application/o/authorize/"
-
-    @property
-    def TOKEN_URL(self) -> str:
-        return f"{self.AUTHENTIK_URL}/application/o/token/"
-
-    @property
-    def USERINFO_URL(self) -> str:
-        return f"{self.AUTHENTIK_URL}/application/o/userinfo/"
-
-    @property
-    def JWKS_URL(self) -> str:
-        return f"{self.AUTHENTIK_URL}/application/o/{self.APP_SLUG}/jwks/"
+    OPENID_CONFIG_URL: AnyHttpUrl
 
 
 class Examen(BaseModel):

@@ -1,89 +1,74 @@
-from typing import Any, Dict
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.responses import RedirectResponse
-import httpx
+"""
+FastAPI OAuth2 integration with Authentik using OpenID Connect
+"""
+from typing import Any, Dict, Optional
 
-from quizzy.auth import User, get_current_user
+from fastapi import FastAPI, Request
+from fastapi.responses import RedirectResponse
+from authlib.integrations.starlette_client import OAuth
+from pydantic import BaseModel
+from starlette.middleware.sessions import SessionMiddleware
+
 from quizzy.config import config
 
 
-app = FastAPI(title="FastAPI with Authentik OAuth2")
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    userinfo: Optional[Dict[str, Any]] = None
+
+
+app = FastAPI()
+app.add_middleware(SessionMiddleware, secret_key=config.JWT_SECRET)
+
+oauth = OAuth()
+oauth.register(
+    "descope",
+    client_id=config.CLIENT_ID,
+    client_secret=config.CLIENT_SECRET,
+    server_metadata_url=str(config.OPENID_CONFIG_URL),
+    client_kwargs={"scope": "openid email"},
+)
 
 
 @app.get("/")
 async def root() -> Dict[str, str]:
     """Public endpoint"""
-    return {
-        "message": "Welcome to FastAPI with Authentik OAuth2",
-        "login": "/login",
-        "docs": "/docs",
-    }
+    return {"message": "FastAPI with Authentik OAuth2"}
+
+
+@app.get("/auth/callback", response_model=Token)
+async def auth(request: Request) -> Dict[str, str]:
+    token = await oauth.descope.authorize_access_token(request)
+    print(token)
+    # userinfo = await oauth.descope.parse_id_token(request, token)
+    # token["userinfo"] = userinfo
+    return token
 
 
 @app.get("/login")
-async def login():
-    """Redirect to Authentik login page"""
-    auth_url = (
-        f"{config.AUTHORIZATION_URL}?"
-        f"client_id={config.CLIENT_ID}&"
-        f"redirect_uri={config.REDIRECT_URI}&"
-        f"response_type=code&"
-        f"scope=openid email profile"
-    )
-    return RedirectResponse(auth_url)
+async def login(request: Request) -> RedirectResponse:
+    redirect_uri = request.url_for("auth")
+    return await oauth.descope.authorize_redirect(request, redirect_uri)
 
 
-@app.get("/callback")
-async def callback(code: str) -> Dict[str, Any]:
-    """OAuth2 callback endpoint"""
-    async with httpx.AsyncClient() as client:
-        # Exchange authorization code for access token
-        token_response = await client.post(
-            config.TOKEN_URL,
-            data={
-                "grant_type": "authorization_code",
-                "code": code,
-                "redirect_uri": config.REDIRECT_URI,
-                "client_id": config.CLIENT_ID,
-                "client_secret": config.CLIENT_SECRET,
-            },
-        )
+# def get_current_user(token: str = Depends(...)):
+#     # We skip details; you can extract the Authorization header,
+#     # Then decode & validate JWT (signature, issuer, audience, scopes) using PyJWT
+#     # Or use Descope’s SDK to validate session / token.
+#     # E.g., using DescopeClient.validate_session
+#     from descope import DescopeClient
+#     dc = DescopeClient(project_id=os.getenv("DESCOPE_PROJECT_ID"))
+#     try:
+#         auth_info = dc.validate_session(session_token=token)
+#     except Exception as e:
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+#     # Optionally check scopes or claims
+#     return auth_info
 
-        if token_response.status_code != 200:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Failed to exchange code for token : '{token_response.text}'",
-            )
-
-        tokens = token_response.json()
-        access_token = tokens.get("access_token")
-
-        return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "message": "Login successful! Use this token in Authorization header",
-        }
-
-
-@app.get("/protected")
-async def protected_route(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
-    """Protected endpoint - requires authentication"""
-    return {"message": "This is a protected route", "user": current_user.model_dump()}
-
-
-@app.get("/admin")
-async def admin_route(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
-    """Admin-only endpoint - requires admin group"""
-    if "admin" not in current_user.groups:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-    return {"message": "This is an admin-only route", "user": current_user.model_dump()}
-
-
-@app.get("/me")
-async def get_me(current_user: User = Depends(get_current_user)) -> User:
-    """Get current user information"""
-    return current_user
-
+# @app.get("/protected")
+# async def protected_route(current = Depends(get_current_user)):
+#     return {"hello": "protected data", "user": current}
 
 if __name__ == "__main__":
     import uvicorn
