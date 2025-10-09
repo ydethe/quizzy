@@ -2,18 +2,36 @@
 FastAPI OAuth2 integration with Authentik using OpenID Connect
 """
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 import httpx
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyHttpUrl
 from starlette.middleware.sessions import SessionMiddleware
 from itsdangerous import URLSafeSerializer
 from jose import jwt, jwk
 
 from quizzy.config import config
+
+
+class Claim(BaseModel):
+    # {"iss":"https://authentik.johncloud.fr/application/o/quizzy/","sub":"f4d0408eef53ec3f660da2d77ded879af3d9278959c65974f5c0c24adb2aec2e","aud":"KW4rMxu2KXzm1yeq3kGctrZH2JiaU9IiIrNxYhm0","exp":1760006282,"iat":1760005982,"auth_time":1759910087,"acr":"goauthentik.io/providers/oauth2/default","amr":["pwd"],"nonce":"TUhvsWQOOEznKRehhy8L","sid":"2a34e1c4c97c1732fdba7b630aef8a74f478ba8d5159a8d8491abd5e8d183d83","email":"ydethe@gmail.com","email_verified":true,"azp":"KW4rMxu2KXzm1yeq3kGctrZH2JiaU9IiIrNxYhm0","uid":"eUf4bK6XBHWMVjH015SJ7l8Yxb5isa7uQEmTX5ff"}}
+    iss: AnyHttpUrl
+    sub: str
+    aud: str
+    exp: int
+    iat: int
+    auth_time: int
+    acr: str
+    amr: List[str]
+    nonce: str
+    sid: str
+    email: str
+    email_verified: bool
+    azp: str
+    uid: str
 
 
 class Token(BaseModel):
@@ -61,7 +79,7 @@ async def login(request: Request) -> RedirectResponse:
     return await oauth.authentik.authorize_redirect(request, redirect_uri)
 
 
-async def get_verified_claims(request: Request):
+async def get_verified_claims(request: Request) -> Claim:
     cookie = request.cookies.get("access_token")
     if not cookie:
         raise HTTPException(status_code=401, detail="Missing token cookie")
@@ -73,7 +91,7 @@ async def get_verified_claims(request: Request):
 
     # === Verify JWT signature and claims ===
     await oauth.authentik.load_server_metadata()
-    jwks_url = oauth.authentik.server_metadata.get("jwks_uri")
+    jwks_url: str = oauth.authentik.server_metadata.get("jwks_uri")
 
     async with httpx.AsyncClient() as client:
         jwks = (await client.get(jwks_url)).json()["keys"]
@@ -101,11 +119,13 @@ async def get_verified_claims(request: Request):
     if claims.get("exp") and time.time() > claims["exp"]:
         raise HTTPException(status_code=401, detail="Token expired")
 
-    return claims
+    py_claims = Claim.model_validate(claims)
+
+    return py_claims
 
 
 @app.get("/protected")
-async def protected(user=Depends(get_verified_claims)):
+async def protected(user: Claim = Depends(get_verified_claims)):
     return {"message": "Access granted", "user": user}
 
 
