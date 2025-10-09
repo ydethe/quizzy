@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.2.3...HEAD)</small>
 
+### Added
+
+- Added Claim model ([069f01f](https://github.com/ydethe/quizzy/commit/069f01f10dd2bd77a0c265859c9f8b17b59b9661) by Yann de The).
+
 <!-- insertion marker -->
 ## [v0.2.3](https://github.com/ydethe/quizzy/releases/tag/v0.2.3) - 2025-10-06
 

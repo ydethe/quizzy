@@ -1,75 +1,89 @@
-from typing import Any, Dict
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2AuthorizationCodeBearer
+"""
+FastAPI OAuth2 integration with Authentik using OpenID Connect
+"""
+import time
+from typing import List
+
+from fastapi import HTTPException, Request
+from authlib.integrations.starlette_client import OAuth
+from authlib.integrations.starlette_client.apps import StarletteOAuth2App
 import httpx
-import jwt
-from jwt import PyJWKClient
-from pydantic import BaseModel
+from pydantic import BaseModel, AnyHttpUrl
+from itsdangerous import URLSafeSerializer
+from jose import jwt, jwk
 
 from .config import config
 
-# OAuth2 scheme
-oauth2_scheme = OAuth2AuthorizationCodeBearer(
-    authorizationUrl=config.AUTHORIZATION_URL,
-    tokenUrl=config.TOKEN_URL,
+
+class Claim(BaseModel):
+    iss: AnyHttpUrl
+    sub: str
+    aud: str
+    exp: int
+    iat: int
+    auth_time: int
+    acr: str
+    amr: List[str]
+    nonce: str
+    sid: str
+    email: str
+    email_verified: bool
+    azp: str
+    uid: str
+
+
+cookie_serializer = URLSafeSerializer(config.COOKIE_SECRET)
+
+oauth = OAuth()
+oidc_client: StarletteOAuth2App = oauth.register(  # type: ignore
+    "oidc_client",
+    client_id=config.CLIENT_ID,
+    client_secret=config.CLIENT_SECRET,
+    server_metadata_url=str(config.OPENID_CONFIG_URL),
+    client_kwargs={"scope": "openid email"},
 )
 
-# User model
-class User(BaseModel):
-    sub: str
-    email: str
-    name: str
-    preferred_username: str
-    groups: list[str] = []
 
+async def get_verified_claims(request: Request) -> Claim:
+    cookie = request.cookies.get("access_token")
+    if not cookie:
+        raise HTTPException(status_code=401, detail="Missing token cookie")
 
-# In-memory session storage (use Redis in production)
-sessions = {}
-
-
-async def verify_token(token: str) -> Dict[str, Any]:
-    """Verify JWT token from Authentik"""
     try:
-        # Get JWKS from Authentik
-        jwks_client = PyJWKClient(config.JWKS_URL)
-        signing_key = jwks_client.get_signing_key_from_jwt(token)
+        token = cookie_serializer.loads(cookie)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid cookie signature")
 
-        # Decode and verify token
-        payload = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=["RS256"],
-            audience=config.CLIENT_ID,
-            options={"verify_exp": True},
-        )
-        return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
-    except jwt.InvalidTokenError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid token: {str(e)}"
-        )
+    # === Verify JWT signature and claims ===
+    await oidc_client.load_server_metadata()
+    jwks_url: str = oidc_client.server_metadata.get("jwks_uri")
 
-
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    """Get current user from token"""
-    await verify_token(token)
-
-    # Get additional user info from userinfo endpoint
     async with httpx.AsyncClient() as client:
-        response = await client.get(
-            config.USERINFO_URL, headers={"Authorization": f"Bearer {token}"}
-        )
-        if response.status_code != 200:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not fetch user info"
-            )
-        user_info = response.json()
+        jwks = (await client.get(jwks_url)).json()["keys"]
 
-    return User(
-        sub=user_info.get("sub"),
-        email=user_info.get("email", ""),
-        name=user_info.get("name", ""),
-        preferred_username=user_info.get("preferred_username", ""),
-        groups=user_info.get("groups", []),
-    )
+    header = jwt.get_unverified_header(token)
+    key = next((k for k in jwks if k["kid"] == header["kid"]), None)
+    if not key:
+        raise HTTPException(status_code=401, detail="Unknown key ID")
+
+    # Build public key
+    public_key = jwk.construct(key)
+
+    try:
+        claims = jwt.decode(
+            token,
+            key=public_key.to_pem().decode(),
+            algorithms=[key["alg"]],
+            audience=config.CLIENT_ID,
+            issuer=oidc_client.server_metadata.get("issuer"),
+        )
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token invalid: {e}")
+
+    # Optional: check expiration
+    if claims.get("exp") and time.time() > claims["exp"]:
+        raise HTTPException(status_code=401, detail="Token expired")
+
+    py_claims = Claim.model_validate(claims)
+
+    return py_claims
