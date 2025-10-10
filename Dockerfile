@@ -15,9 +15,9 @@ COPY dist/*.whl .
 RUN python -m pip install --no-cache-dir *.whl && rm -f *.whl
 
 # Expose port
-EXPOSE 8030
+EXPOSE 8000
 
 # Run app with gunicorn + uvicorn workers
 CMD ["python", "-m", "quizzy"]
 
-HEALTHCHECK --interval=5s --timeout=5s --retries=5 CMD curl --include --request GET http://localhost:8030/health || exit 1
+HEALTHCHECK --interval=5s --timeout=5s --retries=5 CMD curl --include --request GET http://localhost:8000/health || exit 1
