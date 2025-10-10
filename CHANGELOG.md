@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added authentication on admin page ([a81dff1](https://github.com/ydethe/quizzy/commit/a81dff16f79485e9146ccfd6db5bdf33527353cd) by Yann de The).
 - Added Claim model ([069f01f](https://github.com/ydethe/quizzy/commit/069f01f10dd2bd77a0c265859c9f8b17b59b9661) by Yann de The).
 
+### Fixed
+
+- Fixed dependencies ([28cc0a3](https://github.com/ydethe/quizzy/commit/28cc0a3bebae85ce7ea9351e868616eb35e26124) by Yann de The).
+
 <!-- insertion marker -->
 ## [v0.2.3](https://github.com/ydethe/quizzy/releases/tag/v0.2.3) - 2025-10-06
 
