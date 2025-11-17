@@ -1,89 +1,32 @@
-"""
-FastAPI OAuth2 integration with Authentik using OpenID Connect
-"""
-import time
-from typing import List
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2AuthorizationCodeBearer
 
-from fastapi import HTTPException, Request
-from authlib.integrations.starlette_client import OAuth
-from authlib.integrations.starlette_client.apps import StarletteOAuth2App
-import httpx
-from pydantic import BaseModel, AnyHttpUrl
-from itsdangerous import URLSafeSerializer
-from jose import jwt, jwk
+from jwt import PyJWKClient
+import jwt
+from typing import Annotated
 
-from .config import config
+app = FastAPI()
 
-
-class Claim(BaseModel):
-    iss: AnyHttpUrl
-    sub: str
-    aud: str
-    exp: int
-    iat: int
-    auth_time: int
-    acr: str
-    amr: List[str]
-    nonce: str
-    sid: str
-    email: str
-    email_verified: bool
-    azp: str
-    uid: str
-
-
-cookie_serializer = URLSafeSerializer(config.COOKIE_SECRET)
-
-oauth = OAuth()
-oidc_client: StarletteOAuth2App = oauth.register(  # type: ignore
-    "oidc_client",
-    client_id=config.CLIENT_ID,
-    client_secret=config.CLIENT_SECRET,
-    server_metadata_url=str(config.OPENID_CONFIG_URL),
-    client_kwargs={"scope": "openid email"},
+oauth_2_scheme = OAuth2AuthorizationCodeBearer(
+    tokenUrl="https://authentik.johncloud.fr/application/o/token/",
+    authorizationUrl="https://authentik.johncloud.fr/application/o/authorize/",
 )
 
 
-async def get_verified_claims(request: Request) -> Claim:
-    cookie = request.cookies.get("access_token")
-    if not cookie:
-        raise HTTPException(status_code=401, detail="Missing token cookie")
+async def valid_access_token(access_token: Annotated[str, Depends(oauth_2_scheme)]):
+    url = "https://authentik.johncloud.fr/application/o/quizzy/jwks/"
+    optional_custom_headers = {"User-agent": "custom-user-agent"}
+    jwks_client = PyJWKClient(url, headers=optional_custom_headers)
 
     try:
-        token = cookie_serializer.loads(cookie)
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid cookie signature")
-
-    # === Verify JWT signature and claims ===
-    await oidc_client.load_server_metadata()
-    jwks_url: str = oidc_client.server_metadata.get("jwks_uri")
-
-    async with httpx.AsyncClient() as client:
-        jwks = (await client.get(jwks_url)).json()["keys"]
-
-    header = jwt.get_unverified_header(token)
-    key = next((k for k in jwks if k["kid"] == header["kid"]), None)
-    if not key:
-        raise HTTPException(status_code=401, detail="Unknown key ID")
-
-    # Build public key
-    public_key = jwk.construct(key)
-
-    try:
-        claims = jwt.decode(
-            token,
-            key=public_key.to_pem().decode(),
-            algorithms=[key["alg"]],
-            audience=config.CLIENT_ID,
-            issuer=oidc_client.server_metadata.get("issuer"),
+        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+        data = jwt.decode(
+            access_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience="api",
+            options={"verify_exp": True},
         )
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Token invalid: {e}")
-
-    # Optional: check expiration
-    if claims.get("exp") and time.time() > claims["exp"]:
-        raise HTTPException(status_code=401, detail="Token expired")
-
-    py_claims = Claim.model_validate(claims)
-
-    return py_claims
+        return data
+    except jwt.exceptions.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Not authenticated")

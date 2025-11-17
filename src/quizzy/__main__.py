@@ -2,17 +2,14 @@ from datetime import datetime
 from pathlib import Path
 from base64 import b64decode, b64encode
 import json
-from typing import Dict, List
-from urllib.parse import urlencode
+from typing import List
 
-from fastapi.responses import RedirectResponse
 import uvicorn
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI
 from nicegui import Client, ui, events
 from pony.orm import db_session
 from starlette.middleware.sessions import SessionMiddleware
 
-from .auth import get_verified_claims, oidc_client, Claim, cookie_serializer
 from .Quiz import Quiz
 from .database import Etudiant, Session
 from .config import config, Examen
@@ -122,7 +119,7 @@ def health_check():
 
 
 @ui.page("/admin")
-def display_admin(user: Claim = Depends(get_verified_claims)):
+def display_admin():
     qpth = Path("quizzes")
     choices = []
     for file in qpth.glob("*.yml"):
@@ -244,26 +241,6 @@ def run_quizz(token: str, page: int | None = None, answers: str = ""):
                 ui.button("Soumettre", on_click=on_submit(user_results))
 
 
-@fastapi_app.get("/auth/callback")
-async def auth(request: Request) -> RedirectResponse:
-    token: Dict[str, str] = await oidc_client.authorize_access_token(request)
-    access_token: str = token["access_token"]
-
-    # Store the token in a signed cookie
-    response = RedirectResponse(url="/admin")
-    response.set_cookie(
-        "access_token", cookie_serializer.dumps(access_token), httponly=True, secure=False
-    )
-
-    return response
-
-
-@fastapi_app.get("/login")
-async def login(request: Request) -> RedirectResponse:
-    redirect_uri = request.url_for("auth")
-    return await oidc_client.authorize_redirect(request, redirect_uri)
-
-
 @ui.page("/accueil")
 def accueil_quizz(token: str):
     examen = Examen.from_encrypted(token)
@@ -280,37 +257,6 @@ def accueil_quizz(token: str):
             user_results.text_bouton,
             on_click=lambda: ui.navigate.to(f"/run?token={user_results.token}"),
         )
-
-
-@fastapi_app.get("/logout")
-async def logout(request: Request):
-    # 1️⃣ Remove local cookie
-    response = RedirectResponse(url="/")
-    response.delete_cookie("access_token")
-
-    # 2️⃣ Get Authentik's end_session_endpoint
-    await oidc_client.load_server_metadata()
-    end_session_endpoint = oidc_client.server_metadata.get("end_session_endpoint")
-
-    if end_session_endpoint:
-        # optional post-logout redirect URI (must be registered in Authentik)
-        params = {
-            "post_logout_redirect_uri": "http://localhost:8000/",
-        }
-
-        # Optionally include the ID token if you stored it in the cookie
-        id_token = None
-        if "id_token" in request.cookies:
-            id_token = cookie_serializer.loads(request.cookies["id_token"])
-            params["id_token_hint"] = id_token
-            response.delete_cookie("id_token")
-
-        logout_url = f"{end_session_endpoint}?{urlencode(params)}"
-
-        # Redirect user to Authentik logout endpoint
-        response = RedirectResponse(url=logout_url)
-
-    return response
 
 
 ui.run_with(
