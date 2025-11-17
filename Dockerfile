@@ -19,5 +19,3 @@ EXPOSE 8000
 
 # Run app with gunicorn + uvicorn workers
 CMD ["python", "-m", "quizzy"]
-
-HEALTHCHECK --interval=5s --timeout=5s --retries=5 CMD curl --include --request GET http://localhost:8000/health || exit 1
