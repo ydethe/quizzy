@@ -5,7 +5,7 @@ build-backend = "pdm.backend"
 [project]
 name = "quizzy"
 dynamic = ["version"]
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.14"
 readme = "README.md"
 description = ""
 dependencies = [
