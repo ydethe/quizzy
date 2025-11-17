@@ -26,5 +26,6 @@ class Etudiant(db.Entity):
 
 
 db_pth = Path("quizzes") / "quizzy.sqlite"
+db_pth.parent.mkdir(parents=True, exist_ok=True)
 db.bind(provider="sqlite", filename=str(db_pth.absolute()), create_db=True)
 db.generate_mapping(create_tables=True)
