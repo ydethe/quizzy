@@ -6,29 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## [v0.2.8](https://github.com/ydethe/quizzy/releases/tag/v0.2.8) - 2025-11-17
+## [v0.2.9](https://github.com/ydethe/quizzy/releases/tag/v0.2.9) - 2025-11-17
 
-<small>[Compare with v0.2.7](https://github.com/ydethe/quizzy/compare/v0.2.7...v0.2.8)</small>
-
-## [v0.2.7](https://github.com/ydethe/quizzy/releases/tag/v0.2.7) - 2025-11-17
-
-<small>[Compare with v0.2.6](https://github.com/ydethe/quizzy/compare/v0.2.6...v0.2.7)</small>
-
-## [v0.2.6](https://github.com/ydethe/quizzy/releases/tag/v0.2.6) - 2025-11-17
-
-<small>[Compare with v0.2.5](https://github.com/ydethe/quizzy/compare/v0.2.5...v0.2.6)</small>
-
-## [v0.2.5](https://github.com/ydethe/quizzy/releases/tag/v0.2.5) - 2025-10-10
-
-<small>[Compare with v0.2.4](https://github.com/ydethe/quizzy/compare/v0.2.4...v0.2.5)</small>
-
-### Fixed
-
-- Fixed port exposed in Dockerfile ([0cd222f](https://github.com/ydethe/quizzy/commit/0cd222f3f56d0cef9d3e50d5b26f0be8c7f84d83) by Yann de The).
-
-## [v0.2.4](https://github.com/ydethe/quizzy/releases/tag/v0.2.4) - 2025-10-10
-
-<small>[Compare with v0.2.3](https://github.com/ydethe/quizzy/compare/v0.2.3...v0.2.4)</small>
+<small>[Compare with v0.2.3](https://github.com/ydethe/quizzy/compare/v0.2.3...v0.2.9)</small>
 
 ### Added
 
@@ -37,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Fixed port exposed in Dockerfile ([0cd222f](https://github.com/ydethe/quizzy/commit/0cd222f3f56d0cef9d3e50d5b26f0be8c7f84d83) by Yann de The).
 - Fixed dependencies ([28cc0a3](https://github.com/ydethe/quizzy/commit/28cc0a3bebae85ce7ea9351e868616eb35e26124) by Yann de The).
 
 ## [v0.2.3](https://github.com/ydethe/quizzy/releases/tag/v0.2.3) - 2025-10-06

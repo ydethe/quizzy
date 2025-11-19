@@ -4,20 +4,30 @@ from base64 import b64decode, b64encode
 import json
 from typing import List
 
+from fastapi.responses import RedirectResponse
+from fastapi_sso import OpenID
+from sqlmodel import select, Session
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, Request, Response
 from nicegui import Client, ui, events
-from pony.orm import db_session
 from starlette.middleware.sessions import SessionMiddleware
 
 from .Quiz import Quiz
-from .database import Etudiant, Session
+from .database import Passage, engine, Etudiant
 from .config import config, Examen
 from . import logger
+from .auth import auth_router, get_logged_user, RequiresLoginException
 
 
 fastapi_app = FastAPI()
 fastapi_app.add_middleware(SessionMiddleware, secret_key=config.JWT_SECRET)
+
+fastapi_app.include_router(auth_router)
+
+
+@fastapi_app.exception_handler(RequiresLoginException)
+async def exception_handler(request: Request, exc: RequiresLoginException) -> Response:
+    return RedirectResponse(url="/auth/login")
 
 
 class FilledQuiz(Quiz):
@@ -77,16 +87,18 @@ inactive_color = "grey"
 
 
 def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
-    with db_session:
-        query = Etudiant.select_by_sql("SELECT * FROM Etudiant p WHERE p.email==$examen.email")
-        # query = select(e for e in Etudiant if e.email == examen.email)
-        if len(query) == 0:
-            e = Etudiant(nom=examen.nom, prenom=examen.prenom, email=examen.email)
-        else:
-            e = query[0]
+    with Session(engine) as session:
+        query = select(Etudiant).where(Etudiant.email == examen.email)
+        results = session.exec(query).all()
 
-    with db_session:
-        Session(
+        # query = select(e for e in Etudiant if e.email == examen.email)
+        if len(results) == 0:
+            e = Etudiant(nom=examen.nom, prenom=examen.prenom, email=examen.email)
+            session.add(e)
+        else:
+            e = results[0]
+
+        Passage(
             quiz_nom=examen.quizz,
             quiz_hash=quizz.hash,
             etudiant_id=e.id,
@@ -119,7 +131,7 @@ def health_check():
 
 
 @ui.page("/admin")
-def display_admin():
+def display_admin(user: OpenID = Depends(get_logged_user)):
     qpth = Path("quizzes")
     choices = []
     for file in qpth.glob("*.yml"):

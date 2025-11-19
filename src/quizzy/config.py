@@ -17,6 +17,12 @@ class QuizzyConfig(BaseSettings):
     CLIENT_SECRET: str
     REDIRECT_URI: AnyHttpUrl
     OPENID_CONFIG_URL: AnyHttpUrl
+    POSTGRES_PASSWORD: str
+    POSTGRES_USER: str
+    POSTGRES_DB: str
+    SERVICE_PASSWORD_POSTGRESQL: str
+    SERVICE_USER_POSTGRESQL: str
+    POSTGRES_HOST: str
 
 
 class Examen(BaseModel):

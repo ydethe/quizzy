@@ -1,0 +1,27 @@
+services:
+  postgresql:
+    image: 'postgres:15-alpine'
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}'
+      interval: 2s
+      timeout: 10s
+      retries: 15
+    volumes:
+      - .tests_db:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_DB: $POSTGRES_DB
+      SERVICE_PASSWORD_POSTGRESQL: '${SERVICE_PASSWORD_POSTGRESQL}'
+      SERVICE_USER_POSTGRESQL: '${SERVICE_USER_POSTGRESQL}'
+
+networks:
+  default:
+    external: true
+    name: $TRAEFIK_NETWORK
+
