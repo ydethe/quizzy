@@ -1,8 +1,20 @@
 from datetime import datetime
+from pathlib import Path
 import jwt
 import json
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl, BaseModel
+import requests
+
+
+def download_geoip_db(db_url: AnyHttpUrl, dest_file: Path):
+    import zlib
+
+    res = requests.get(str(db_url))
+    data = zlib.decompress(res.content, zlib.MAX_WBITS | 32)
+
+    with open(dest_file, "wb") as f:
+        f.write(data)
 
 
 class QuizzyConfig(BaseSettings):
@@ -23,6 +35,14 @@ class QuizzyConfig(BaseSettings):
     SERVICE_PASSWORD_POSTGRESQL: str
     SERVICE_USER_POSTGRESQL: str
     POSTGRES_HOST: str
+    GEOIP2_DB_URL: AnyHttpUrl
+
+    def load_geoip(self):
+        download_geoip_db(self.GEOIP2_DB_URL, self.geoip_pth)
+
+    @property
+    def geoip_pth(self) -> Path:
+        return Path(".") / "GeoLite2-City.mmdb"
 
 
 class Examen(BaseModel):
@@ -58,3 +78,4 @@ class Examen(BaseModel):
 
 
 config = QuizzyConfig()
+config.load_geoip()

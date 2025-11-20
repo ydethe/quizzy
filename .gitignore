@@ -5,6 +5,7 @@ htmldoc/
 migrations
 .gradio
 Maildir/
+GeoLite2-City.mmdb
 emails
 *.db
 *.bak

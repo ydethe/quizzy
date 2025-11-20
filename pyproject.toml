@@ -11,6 +11,7 @@ description = ""
 dependencies = [
     "authlib[crypto]>=1.6.5",
     "fastapi-sso>=0.18.0",
+    "geoip2>=5.1.0",
     "gunicorn>=23.0.0",
     "httpx>=0.28.1",
     "nicegui>=2.24.2",
