@@ -88,6 +88,7 @@ inactive_color = "grey"
 
 def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
     with Session(engine) as session:
+        # Upserting Etudiant
         query = select(Etudiant).where(Etudiant.email == examen.email)
         results = session.exec(query).all()
 
@@ -98,6 +99,7 @@ def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
         else:
             e = results[0]
 
+        # Upserting Geoip
         query = select(Geoip).where(Geoip.ip_origine == client_ip)
         results = session.exec(query).all()
 

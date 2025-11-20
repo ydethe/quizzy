@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added geoip ([cc5fa58](https://github.com/ydethe/quizzy/commit/cc5fa58c1f314cddd78ff343440d9215b793cb6f) by Yann de The).
+- Added geoip ([ebf350a](https://github.com/ydethe/quizzy/commit/ebf350a76f299c6698b1d5c9132d6d309a0cab80) by Yann de The).
 
 <!-- insertion marker -->
 ## [v0.2.9](https://github.com/ydethe/quizzy/releases/tag/v0.2.9) - 2025-11-17
