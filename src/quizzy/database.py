@@ -37,6 +37,23 @@ class Geoip(SQLModel, table=True):
     country: str | None = None
     passages: list["Passage"] = Relationship(back_populates="geoip")
 
+    @classmethod
+    def from_ip_addr(cls, ip_addr: str) -> "Geoip":
+        city = get_geoip_info(ip_addr)
+        if city is None or city.location is None:
+            gip = Geoip(
+                ip_origine=ip_addr,
+            )
+        else:
+            gip = Geoip(
+                ip_origine=ip_addr,
+                latitude=city.location.latitude,
+                longitude=city.location.longitude,
+                accuracy_radius=city.location.accuracy_radius,
+            )
+
+        return gip
+
 
 class Passage(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)

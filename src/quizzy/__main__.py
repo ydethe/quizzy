@@ -13,7 +13,7 @@ from nicegui import Client, ui, events
 from starlette.middleware.sessions import SessionMiddleware
 
 from .Quiz import Quiz
-from .database import Geoip, Passage, engine, Etudiant, get_geoip_info
+from .database import Geoip, Passage, engine, Etudiant
 from .config import config, Examen
 from . import logger
 from .auth import auth_router, get_logged_user, RequiresLoginException
@@ -91,7 +91,6 @@ def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
         query = select(Etudiant).where(Etudiant.email == examen.email)
         results = session.exec(query).all()
 
-        # query = select(e for e in Etudiant if e.email == examen.email)
         if len(results) == 0:
             e = Etudiant(nom=examen.nom, prenom=examen.prenom, email=examen.email)
             session.add(e)
@@ -99,19 +98,15 @@ def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
         else:
             e = results[0]
 
-        city = get_geoip_info(client_ip)  # noqa: F841
-        if city is None or city.location is None:
-            gip = Geoip(
-                ip_origine=client_ip,
-            )
+        query = select(Geoip).where(Geoip.ip_origine == client_ip)
+        results = session.exec(query).all()
+
+        if len(results) == 0:
+            gip = Geoip.from_ip_addr(client_ip)
+            session.add(gip)
+            session.commit()
         else:
-            gip = Geoip(
-                ip_origine=client_ip,
-                latitude=city.location.latitude,
-                longitude=city.location.longitude,
-                accuracy_radius=city.location.accuracy_radius,
-            )
-        session.add(gip)
+            gip = results[0]
 
         p = Passage(
             quiz_nom=examen.quizz,
