@@ -13,7 +13,7 @@ from nicegui import Client, ui, events
 from starlette.middleware.sessions import SessionMiddleware
 
 from .Quiz import Quiz
-from .database import Passage, engine, Etudiant, get_geoip_info
+from .database import Geoip, Passage, engine, Etudiant, get_geoip_info
 from .config import config, Examen
 from . import logger
 from .auth import auth_router, get_logged_user, RequiresLoginException
@@ -100,6 +100,18 @@ def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
             e = results[0]
 
         city = get_geoip_info(client_ip)  # noqa: F841
+        if city is None or city.location is None:
+            gip = Geoip(
+                ip_origine=client_ip,
+            )
+        else:
+            gip = Geoip(
+                ip_origine=client_ip,
+                latitude=city.location.latitude,
+                longitude=city.location.longitude,
+                accuracy_radius=city.location.accuracy_radius,
+            )
+        session.add(gip)
 
         p = Passage(
             quiz_nom=examen.quizz,
@@ -110,7 +122,6 @@ def enregistre_examen(examen: Examen, quizz: FilledQuiz, client_ip: str):
             score=quizz.get_score(),
             ip_origine=client_ip,
         )
-
         session.add(p)
 
         session.commit()

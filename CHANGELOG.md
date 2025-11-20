@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/ydethe/quizzy/compare/v0.2.9...HEAD)</small>
 
+### Added
+
+- Added geoip ([f1c2651](https://github.com/ydethe/quizzy/commit/f1c2651d60a5ce3a8da8a08b57460096b48f1821) by Yann de The).
+
 <!-- insertion marker -->
 ## [v0.2.9](https://github.com/ydethe/quizzy/releases/tag/v0.2.9) - 2025-11-17
 

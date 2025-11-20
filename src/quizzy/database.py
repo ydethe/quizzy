@@ -28,16 +28,27 @@ class Etudiant(SQLModel, table=True):
     email: str
 
 
+class Geoip(SQLModel, table=True):
+    ip_origine: str | None = Field(default=None, index=True, primary_key=True)
+    latitude: float | None = None
+    longitude: float | None = None
+    accuracy_radius: float | None = None
+    city: str | None = None
+    country: str | None = None
+    passages: list["Passage"] = Relationship(back_populates="geoip")
+
+
 class Passage(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     quiz_nom: str
     quiz_hash: str
     etudiant_id: int = Field(foreign_key="etudiant.id")
     etudiant: Etudiant = Relationship(back_populates="passages")
+    ip_origine: str = Field(foreign_key="geoip.ip_origine")
+    geoip: Geoip = Relationship(back_populates="passages")
     date: datetime
     reponses: str
     score: float
-    ip_origine: str
 
 
 engine = create_engine(
